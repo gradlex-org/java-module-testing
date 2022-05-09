@@ -1,6 +1,8 @@
-package de.jjohannes.gradle.moduletesting;
+package de.jjohannes.gradle.moduletesting.internal.provider;
 
 
+import de.jjohannes.gradle.moduletesting.internal.ModuleInfoParser;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.internal.jvm.JavaModuleDetector;
 import org.gradle.process.CommandLineArgumentProvider;
@@ -15,16 +17,14 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
     private final Set<File> mainSourceFolders;
     private final Set<File> testSourceFolders;
     private final JavaCompile task;
-    private final String testFrameworkAPI;
-    private final List<String> testRequires;
+    private final Provider<List<String>> testRequires;
     private final JavaModuleDetector moduleDetector;
     private final ModuleInfoParser moduleInfoParser;
 
-    public WhiteboxTestCompileArgumentProvider(Set<File> mainSourceFolders, Set<File> testSourceFolders, JavaCompile task, String testFrameworkAPI, List<String> testRequires, JavaModuleDetector moduleDetector, ModuleInfoParser moduleInfoParser) {
+    public WhiteboxTestCompileArgumentProvider(Set<File> mainSourceFolders, Set<File> testSourceFolders, JavaCompile task, Provider<List<String>> testRequires, JavaModuleDetector moduleDetector, ModuleInfoParser moduleInfoParser) {
         this.mainSourceFolders = mainSourceFolders;
         this.testSourceFolders = testSourceFolders;
         this.task = task;
-        this.testFrameworkAPI = testFrameworkAPI;
         this.testRequires = testRequires;
         this.moduleDetector = moduleDetector;
         this.moduleInfoParser = moduleInfoParser;
@@ -42,13 +42,7 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
         args.add("--module-path");
         args.add(moduleDetector.inferModulePath(true, task.getClasspath()).getFiles().stream().map(File::getPath).collect(Collectors.joining(cpSeparator)));
 
-        // Add module dependency to test framework
-        args.add("--add-modules");
-        args.add(testFrameworkAPI);
-        args.add("--add-reads");
-        args.add(moduleName + "=" + testFrameworkAPI);
-
-        for (String testRequires : testRequires) {
+        for (String testRequires : testRequires.get()) {
             args.add("--add-modules");
             args.add(testRequires);
             args.add("--add-reads");

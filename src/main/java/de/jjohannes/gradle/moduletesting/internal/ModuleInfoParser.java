@@ -1,4 +1,4 @@
-package de.jjohannes.gradle.moduletesting;
+package de.jjohannes.gradle.moduletesting.internal;
 
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFile;
@@ -23,7 +23,7 @@ public class ModuleInfoParser {
     public String moduleName(Set<File> sourceFolders) {
         for (File folder : sourceFolders) {
             Provider<RegularFile> moduleInfoFile = layout.file(providers.provider(() -> new File(folder, "module-info.java")));
-            Provider<String> moduleInfoContent = providers.fileContents(moduleInfoFile).getAsText().forUseAtConfigurationTime();
+            Provider<String> moduleInfoContent = providers.fileContents(moduleInfoFile).getAsText();
             if (moduleInfoContent.isPresent()) {
                 return moduleName(moduleInfoContent.get());
             }

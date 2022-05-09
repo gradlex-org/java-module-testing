@@ -1,20 +1,20 @@
-package de.jjohannes.gradle.moduletesting;
+package de.jjohannes.gradle.moduletesting.internal.bridges;
 
 import org.gradle.api.Project;
+import org.gradle.api.provider.Provider;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 
 public class JavaModuleDependenciesBridge {
 
-    public static Map<?, ?> gav(Project project, String moduleName) {
+    public static Provider<?> gav(Project project, String moduleName) {
         Object javaModuleDependencies = project.getExtensions().findByName("javaModuleDependencies");
         if (javaModuleDependencies == null) {
             return null;
         }
         try {
             Method gav = javaModuleDependencies.getClass().getMethod("gav", String.class);
-            return (Map<?, ?>) gav.invoke(javaModuleDependencies, moduleName);
+            return (Provider<?>) gav.invoke(javaModuleDependencies, moduleName);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
