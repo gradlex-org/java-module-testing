@@ -1,6 +1,26 @@
 A Gradle 7.4+ plugin to turn a [JVM Test Suite](https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html#sec:jvm_test_suite_configuration)
 into **Blackbox** or **Whitebox** Test Suite for Java Modules.
 
+This plugin is maintained by me, [Jendrik Johannes](https://github.com/jjohannes).
+I offer consulting and training for Gradle and/or the Java Module System - please [reach out](mailto:jendrik.johannes@gmail.com) if you are interested.
+There is also my [YouTube channel](https://www.youtube.com/playlist?list=PLWQK2ZdV4Yl2k2OmC_gsjDpdIBTN0qqkE) on Gradle topics.
+
+If you have a suggestion or a question, please [open an issue](https://github.com/jjohannes/java-module-testing/issues/new).
+
+# Java Modules with Gradle
+
+If you plan to build Java Modules with Gradle, you should consider using these plugins on top of Gradle core:
+
+- [`id("de.jjohannes.java-module-dependencies")`](https://github.com/jjohannes/java-module-dependencies)  
+  Avoid duplicated dependency definitions and get your Module Path under control
+- [`id("de.jjohannes.java-module-testing")`](https://github.com/jjohannes/java-module-testing)  
+  Proper test setup for Java Modules
+- [`id("de.jjohannes.extra-java-module-info")`](https://github.com/jjohannes/extra-java-module-info)  
+  Only if your (existing) project cannot avoid using non-module legacy Jars
+
+[Here is a sample](https://github.com/jjohannes/java-module-testing/tree/main/samples/use-all-java-module-plugins)
+that shows all plugins in combination.
+
 # How to use?
 
 For a quick start, you can find some samples here:
