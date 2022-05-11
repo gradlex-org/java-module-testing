@@ -36,17 +36,41 @@ public abstract class JavaModuleTestingExtension {
         this.moduleDetector = moduleDetector;
     }
 
+    /**
+     * Turn the given JVM Test Suite into a Blackbox Test Suite.
+     * For example:
+     *
+     * javaModuleTesting.blackbox(testing.suites["integtest"])
+     */
     public void blackbox(TestSuite jvmTestSuite) {
         if (jvmTestSuite instanceof JvmTestSuite) {
             configureJvmTestSuiteForBlackbox((JvmTestSuite) jvmTestSuite);
         }
     }
 
+    /**
+     * Turn the given JVM Test Suite into a Whitebox Test Suite.
+     * For example:
+     *
+     * javaModuleTesting.whitebox(testing.suites["test"])
+     */
     public void whitebox(TestSuite jvmTestSuite) {
         whitebox(jvmTestSuite, NO_OP_ACTION);
 
     }
 
+    /**
+     * Turn the given JVM Test Suite into a Whitebox Test Suite.
+     * If needed, configure additional 'requires' and open the
+     * test packages for reflection.
+     *
+     * For example, for JUnit 5, you need at least:
+     *
+     * javaModuleTesting.whitebox(testing.suites["test"]) {
+     *   requires.add("org.junit.jupiter.api")
+     *   opensTo.add("org.junit.platform.commons")
+     * }
+     */
     public void whitebox(TestSuite jvmTestSuite, Action<WhiteboxJvmTestSuite> conf) {
         if (jvmTestSuite instanceof JvmTestSuite) {
             WhiteboxJvmTestSuite whiteboxJvmTestSuite = project.getObjects().newInstance(WhiteboxJvmTestSuite.class);
