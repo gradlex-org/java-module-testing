@@ -21,6 +21,9 @@ If you plan to build Java Modules with Gradle, you should consider using these p
 [Here is a sample](https://github.com/jjohannes/java-module-testing/tree/main/samples/use-all-java-module-plugins)
 that shows all plugins in combination.
 
+[Full Java Module System Project Setup](https://github.com/jjohannes/gradle-project-setup-howto/tree/java_module_system) is a full-fledged Java Module System project setup using these plugins.  
+[<img src="https://onepiecesoftware.github.io/img/videos/15-3.png" width="260">](https://www.youtube.com/watch?v=uRieSnovlVc&list=PLWQK2ZdV4Yl2k2OmC_gsjDpdIBTN0qqkE)
+
 # How to use?
 
 For a quick start, you can find some samples here:
@@ -109,6 +112,3 @@ Changes for test runtime (`:test`):
 - Now, the main and test classes are both used as locations for test discovery.
   By this, Gradle will find the `moudle-info.class` of the main module for the tests.
   Using `--patch-module`, _main classes_, _main resources_, _test classes_, and _test resources_ folders are all merged to be treated as one module during test runtime.
-
-
-
