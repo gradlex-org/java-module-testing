@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("org.my.gradle.base")
-    id("de.jjohannes.java-module-testing")
+    id("org.gradlex.java-module-testing")
 }
 
 javaModuleTesting.whitebox(

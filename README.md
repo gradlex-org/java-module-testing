@@ -1,24 +1,29 @@
+# Java Module Testing Gradle plugin
+
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fgradlex-org%2Fjava-module-testing%2Fbadge%3Fref%3Dmain&style=flat)](https://actions-badge.atrox.dev/gradlex-org/java-module-testing/goto?ref=main)
+[![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v?label=Plugin%20Portal&metadataUrl=https%3A%2F%2Fplugins.gradle.org%2Fm2%2Forg%2Fgradlex%2Fjava-module-testing%2Forg.gradlex.java-module-testing.gradle.plugin%2Fmaven-metadata.xml)](https://plugins.gradle.org/plugin/org.gradlex.java-module-testing)
+
 A Gradle 7.4+ plugin to turn a [JVM Test Suite](https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html#sec:jvm_test_suite_configuration)
-into **Blackbox** or **Whitebox** Test Suite for Java Modules.
+into a **Blackbox** or **Whitebox** Test Suite for Java Modules.
 
 This plugin is maintained by me, [Jendrik Johannes](https://github.com/jjohannes).
 I offer consulting and training for Gradle and/or the Java Module System - please [reach out](mailto:jendrik.johannes@gmail.com) if you are interested.
 There is also my [YouTube channel](https://www.youtube.com/playlist?list=PLWQK2ZdV4Yl2k2OmC_gsjDpdIBTN0qqkE) on Gradle topics.
 
-If you have a suggestion or a question, please [open an issue](https://github.com/jjohannes/java-module-testing/issues/new).
+If you have a suggestion or a question, please [open an issue](https://github.com/gradlex-org/java-module-testing/issues/new).
 
 # Java Modules with Gradle
 
 If you plan to build Java Modules with Gradle, you should consider using these plugins on top of Gradle core:
 
-- [`id("de.jjohannes.java-module-dependencies")`](https://github.com/jjohannes/java-module-dependencies)  
+- [`id("org.gradlex.java-module-dependencies")`](https://github.com/gradlex-org/java-module-dependencies)  
   Avoid duplicated dependency definitions and get your Module Path under control
-- [`id("de.jjohannes.java-module-testing")`](https://github.com/jjohannes/java-module-testing)  
+- [`id("org.gradlex.java-module-testing")`](https://github.com/gradlex-org/java-module-testing)  
   Proper test setup for Java Modules
-- [`id("de.jjohannes.extra-java-module-info")`](https://github.com/jjohannes/extra-java-module-info)  
+- [`id("org.gradlex.extra-java-module-info")`](https://github.com/gradlex-org/extra-java-module-info)  
   Only if your (existing) project cannot avoid using non-module legacy Jars
 
-[Here is a sample](https://github.com/jjohannes/java-module-testing/tree/main/samples/use-all-java-module-plugins)
+[Here is a sample](https://github.com/gradlex-org/java-module-testing/tree/main/samples/use-all-java-module-plugins)
 that shows all plugins in combination.
 
 [Full Java Module System Project Setup](https://github.com/jjohannes/gradle-project-setup-howto/tree/java_module_system) is a full-fledged Java Module System project setup using these plugins.  
@@ -40,7 +45,7 @@ Add this to the build file of your convention plugin's build
 
 ```
 dependencies {
-    implementation("de.jjohannes.gradle:java-module-testing:0.1")
+    implementation("org.gradlex:java-module-testing:1.0")
 }
 ```
 
@@ -50,7 +55,7 @@ In your convention plugin, apply the plugin.
 
 ```
 plugins {
-    id("de.jjohannes.java-module-testing")
+    id("org.gradlex.java-module-testing")
 }
 ```
 
@@ -112,3 +117,8 @@ Changes for test runtime (`:test`):
 - Now, the main and test classes are both used as locations for test discovery.
   By this, Gradle will find the `moudle-info.class` of the main module for the tests.
   Using `--patch-module`, _main classes_, _main resources_, _test classes_, and _test resources_ folders are all merged to be treated as one module during test runtime.
+
+# Disclaimer
+
+Gradle and the Gradle logo are trademarks of Gradle, Inc.
+The GradleX project is not endorsed by, affiliated with, or associated with Gradle or Gradle, Inc. in any way.
