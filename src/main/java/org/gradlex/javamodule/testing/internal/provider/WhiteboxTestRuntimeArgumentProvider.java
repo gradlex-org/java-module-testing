@@ -31,21 +31,28 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
     private final Provider<Directory> testClassesFolders;
     private final File resourcesUnderTest;
     private final File testResources;
-    private final Provider<List<String>> testRequires;
-    private final Provider<List<String>> opensTo;
     private final ModuleInfoParser moduleInfoParser;
+
+    private final List<String> allTestRequires = new ArrayList<>();
+    private final List<String> allTestOpensTo = new ArrayList<>();
 
     public WhiteboxTestRuntimeArgumentProvider(Set<File> mainSourceFolders,
            Provider<Directory> testClassesFolders, File resourcesUnderTest, File testResources,
-           Provider<List<String>> testRequires, Provider<List<String>> opensTo, ModuleInfoParser moduleInfoParser) {
+           ModuleInfoParser moduleInfoParser) {
 
         this.mainSourceFolders = mainSourceFolders;
         this.testClassesFolders = testClassesFolders;
         this.resourcesUnderTest = resourcesUnderTest;
         this.testResources = testResources;
-        this.testRequires = testRequires;
-        this.opensTo = opensTo;
         this.moduleInfoParser = moduleInfoParser;
+    }
+
+    public void testRequires(List<String> testRequires) {
+        allTestRequires.addAll(testRequires);
+    }
+
+    public void testOpensTo(List<String> testRequires) {
+        allTestOpensTo.addAll(testRequires);
     }
 
     @Override
@@ -62,7 +69,7 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
 
         List<String> args = new ArrayList<>();
 
-        for (String testRequires : testRequires.get()) {
+        for (String testRequires : allTestRequires) {
             args.add("--add-modules");
             args.add(testRequires);
             args.add("--add-reads");
@@ -70,7 +77,7 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
         }
 
         for (String packageName : allTestClassPackages) {
-            for (String opensTo : opensTo.get()) {
+            for (String opensTo : allTestOpensTo) {
                 args.add("--add-opens");
                 args.add(moduleName + "/" + packageName + "=" + opensTo);
             }

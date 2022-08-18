@@ -72,7 +72,6 @@ public abstract class JavaModuleTestingExtension {
      */
     public void whitebox(TestSuite jvmTestSuite) {
         whitebox(jvmTestSuite, NO_OP_ACTION);
-
     }
 
     /**
@@ -114,7 +113,7 @@ public abstract class JavaModuleTestingExtension {
         tasks.named(sourceSet.getName(), Test.class, t -> {
             // Classpath consists only of Jars to include classes+resources in one place
             t.setClasspath(configurations.getByName(sourceSet.getRuntimeClasspathConfigurationName()).plus(project.files(jarTask)));
-            // Rest test classes dir to allow switching back from 'whitebox' to 'blackbox'
+            // Reset test classes dir
             t.setTestClassesDirs(sourceSet.getOutput().getClassesDirs());
         });
     }
@@ -129,13 +128,19 @@ public abstract class JavaModuleTestingExtension {
         tasks.named(testSources.getCompileJavaTaskName(), JavaCompile.class, compileJava -> {
             SourceSet sourcesUnderTest = whiteboxJvmTestSuite.getSourcesUnderTest().get();
             compileJava.setClasspath(sourcesUnderTest.getOutput().plus(configurations.getByName(testSources.getCompileClasspathConfigurationName())));
-            compileJava.getOptions().getCompilerArgumentProviders().add(new WhiteboxTestCompileArgumentProvider(
-                    sourcesUnderTest.getJava().getSrcDirs(),
-                    testSources.getJava().getSrcDirs(),
-                    compileJava,
-                    whiteboxJvmTestSuite.getRequires(),
-                    moduleDetector,
-                    moduleInfoParser));
+
+            WhiteboxTestCompileArgumentProvider argumentProvider = (WhiteboxTestCompileArgumentProvider) compileJava.getOptions().getCompilerArgumentProviders().stream()
+                    .filter(p -> p instanceof WhiteboxTestCompileArgumentProvider).findFirst().orElseGet(() -> {
+                        WhiteboxTestCompileArgumentProvider newProvider = new WhiteboxTestCompileArgumentProvider(
+                                sourcesUnderTest.getJava().getSrcDirs(),
+                                testSources.getJava().getSrcDirs(),
+                                compileJava,
+                                moduleDetector,
+                                moduleInfoParser);
+                        compileJava.getOptions().getCompilerArgumentProviders().add(newProvider);
+                        return newProvider;
+                    });
+            argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires().get());
         });
 
         tasks.named(testSources.getName(), Test.class, test -> {
@@ -145,15 +150,19 @@ public abstract class JavaModuleTestingExtension {
             // Add main classes here so that Gradle finds module-info.class and treats this as a test with module path
             test.setTestClassesDirs(sourcesUnderTest.getOutput().getClassesDirs().plus(testSources.getOutput().getClassesDirs()));
 
-            test.getJvmArgumentProviders().add(new WhiteboxTestRuntimeArgumentProvider(
-                    sourcesUnderTest.getJava().getSrcDirs(),
-                    testSources.getJava().getClassesDirectory(),
-                    sourcesUnderTest.getOutput().getResourcesDir(),
-                    testSources.getOutput().getResourcesDir(),
-                    whiteboxJvmTestSuite.getRequires(),
-                    whiteboxJvmTestSuite.getOpensTo(),
-                    moduleInfoParser
-            ));
+            WhiteboxTestRuntimeArgumentProvider argumentProvider = (WhiteboxTestRuntimeArgumentProvider) test.getJvmArgumentProviders().stream()
+                    .filter(p -> p instanceof WhiteboxTestRuntimeArgumentProvider).findFirst().orElseGet(() -> {
+                        WhiteboxTestRuntimeArgumentProvider newProvider = new WhiteboxTestRuntimeArgumentProvider(
+                                sourcesUnderTest.getJava().getSrcDirs(),
+                                testSources.getJava().getClassesDirectory(),
+                                sourcesUnderTest.getOutput().getResourcesDir(),
+                                testSources.getOutput().getResourcesDir(),
+                                moduleInfoParser);
+                        test.getJvmArgumentProviders().add(newProvider);
+                        return newProvider;
+                    });
+            argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires().get());
+            argumentProvider.testOpensTo(whiteboxJvmTestSuite.getOpensTo().get());
         });
 
         Configuration implementation = configurations.getByName(testSources.getImplementationConfigurationName());

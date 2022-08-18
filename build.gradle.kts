@@ -12,7 +12,9 @@ java {
 }
 
 dependencies {
+    testImplementation("org.spockframework:spock-core:2.1-groovy-3.0")
     testImplementation("org.gradle.exemplar:samples-check:1.0.0")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
 }
 
 pluginPublishConventions {
@@ -30,5 +32,7 @@ pluginPublishConventions {
 }
 
 tasks.test {
+    useJUnitPlatform()
+    maxParallelForks = 4
     inputs.dir(layout.projectDirectory.dir("samples"))
 }

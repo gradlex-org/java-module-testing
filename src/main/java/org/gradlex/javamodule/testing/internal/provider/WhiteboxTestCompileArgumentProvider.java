@@ -16,9 +16,7 @@
 
 package org.gradlex.javamodule.testing.internal.provider;
 
-
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
-import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.internal.jvm.JavaModuleDetector;
 import org.gradle.process.CommandLineArgumentProvider;
@@ -33,17 +31,23 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
     private final Set<File> mainSourceFolders;
     private final Set<File> testSourceFolders;
     private final JavaCompile task;
-    private final Provider<List<String>> testRequires;
     private final JavaModuleDetector moduleDetector;
     private final ModuleInfoParser moduleInfoParser;
 
-    public WhiteboxTestCompileArgumentProvider(Set<File> mainSourceFolders, Set<File> testSourceFolders, JavaCompile task, Provider<List<String>> testRequires, JavaModuleDetector moduleDetector, ModuleInfoParser moduleInfoParser) {
+    private final List<String> allTestRequires = new ArrayList<>();
+
+    public WhiteboxTestCompileArgumentProvider(
+            Set<File> mainSourceFolders, Set<File> testSourceFolders, JavaCompile task,
+            JavaModuleDetector moduleDetector, ModuleInfoParser moduleInfoParser) {
         this.mainSourceFolders = mainSourceFolders;
         this.testSourceFolders = testSourceFolders;
         this.task = task;
-        this.testRequires = testRequires;
         this.moduleDetector = moduleDetector;
         this.moduleInfoParser = moduleInfoParser;
+    }
+
+    public void testRequires(List<String> testRequires) {
+        allTestRequires.addAll(testRequires);
     }
 
     @Override
@@ -58,7 +62,7 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
         args.add("--module-path");
         args.add(moduleDetector.inferModulePath(true, task.getClasspath()).getFiles().stream().map(File::getPath).collect(Collectors.joining(cpSeparator)));
 
-        for (String testRequires : testRequires.get()) {
+        for (String testRequires : allTestRequires) {
             args.add("--add-modules");
             args.add(testRequires);
             args.add("--add-reads");
