@@ -13,6 +13,8 @@ class GradleBuild {
     final File appBuildFile
     final File appModuleInfoFile
     final File appTestModuleInfoFile
+    final File libBuildFile
+    final File libModuleInfoFile
 
     final String gradleVersionUnderTest = System.getProperty("gradleVersionUnderTest")
 
@@ -22,18 +24,25 @@ class GradleBuild {
         this.appBuildFile = file("app/build.gradle.kts")
         this.appModuleInfoFile = file("app/src/main/java/module-info.java")
         this.appTestModuleInfoFile = file("app/src/test/java/module-info.java")
+        this.libBuildFile = file("lib/build.gradle.kts")
+        this.libModuleInfoFile = file("lib/src/main/java/module-info.java")
 
         settingsFile << '''
+            pluginManagement {
+                plugins { id("org.gradlex.java-module-dependencies") version "1.0" }
+            }
             dependencyResolutionManagement { repositories.mavenCentral() }
+            includeBuild(".")
             rootProject.name = "test-project"
-            include("app")
+            include("app", "lib")
         '''
         appBuildFile << '''
             plugins {
-                id("org.gradlex.java-module-dependencies") version "1.0"
+                id("org.gradlex.java-module-dependencies")
                 id("org.gradlex.java-module-testing")
                 id("application")
             }
+            group = "com.example"
             dependencies {
                 testImplementation(platform("org.junit:junit-bom:5.9.0"))
             }
@@ -41,14 +50,7 @@ class GradleBuild {
                 mainModule.set("org.gradlex.test.app")
                 mainClass.set("org.gradlex.test.app.Main")
             }
-            tasks.register("printRuntimeJars") {
-                doLast { println(configurations.runtimeClasspath.get().files.map { it.name }) }
-            }
-            tasks.register("printCompileJars") {
-                doLast { println(configurations.compileClasspath.get().files.map { it.name }) }
-            }
         '''
-
         file("app/src/test/java/com/example/AppTest.java") << '''
             package com.example;
             
@@ -60,6 +62,15 @@ class GradleBuild {
                 void testApp() {
                 }
             }
+        '''
+
+        libBuildFile << '''
+            plugins {
+                id("org.gradlex.java-module-dependencies")
+                id("org.gradlex.java-module-testing")
+                id("java-library")
+            }
+            group = "com.example"
         '''
     }
 
