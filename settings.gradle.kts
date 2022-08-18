@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencyResolutionManagement {
-    repositories.mavenCentral()
+    repositories.gradlePluginPortal()
 }
 
 rootProject.name = "java-module-testing"

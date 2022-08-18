@@ -39,7 +39,7 @@ class GradleBuild {
         appBuildFile << '''
             plugins {
                 id("org.gradlex.java-module-dependencies")
-                id("org.gradlex.java-module-testing")
+                id("de.jjohannes.java-module-testing")
                 id("application")
             }
             group = "com.example"
@@ -67,7 +67,7 @@ class GradleBuild {
         libBuildFile << '''
             plugins {
                 id("org.gradlex.java-module-dependencies")
-                id("org.gradlex.java-module-testing")
+                id("de.jjohannes.java-module-testing")
                 id("java-library")
             }
             group = "com.example"
