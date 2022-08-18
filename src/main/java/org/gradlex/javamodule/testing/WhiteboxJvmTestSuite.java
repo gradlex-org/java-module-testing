@@ -25,12 +25,16 @@ public interface WhiteboxJvmTestSuite {
     /**
      * Configure which source set contains the 'sources under test' for
      * this Whitebox Test Suite - defaults to 'main'.
+     *
+     * @return the source set under test
      */
     Property<SourceSet> getSourcesUnderTest();
 
     /**
      * Add additional 'requires' directives for the test code.
      * For example, 'requires.add("org.junit.jupiter.api")'.
+     *
+     * @return modifiable list of addition 'requires' (--add-reads)
      */
     ListProperty<String> getRequires();
 
@@ -38,6 +42,8 @@ public interface WhiteboxJvmTestSuite {
      * Open all packages of this Whitebox Test Suite to a given Module
      * for reflection at runtime.
      * For example, 'opensTo.add("org.junit.platform.commons")'.
+     *
+     * @return modifiable list of addition '--add-opens'
      */
     ListProperty<String> getOpensTo();
 }

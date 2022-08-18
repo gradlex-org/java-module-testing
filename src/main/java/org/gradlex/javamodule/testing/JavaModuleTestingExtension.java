@@ -57,6 +57,8 @@ public abstract class JavaModuleTestingExtension {
      * For example:
      *
      * javaModuleTesting.blackbox(testing.suites["integtest"])
+     *
+     * @param jvmTestSuite the JVM Test Suite to configure
      */
     public void blackbox(TestSuite jvmTestSuite) {
         if (jvmTestSuite instanceof JvmTestSuite) {
@@ -69,6 +71,8 @@ public abstract class JavaModuleTestingExtension {
      * For example:
      *
      * javaModuleTesting.whitebox(testing.suites["test"])
+     *
+     * @param jvmTestSuite the JVM Test Suite to configure
      */
     public void whitebox(TestSuite jvmTestSuite) {
         whitebox(jvmTestSuite, NO_OP_ACTION);
@@ -85,6 +89,9 @@ public abstract class JavaModuleTestingExtension {
      *   requires.add("org.junit.jupiter.api")
      *   opensTo.add("org.junit.platform.commons")
      * }
+     *
+     * @param jvmTestSuite the JVM Test Suite to configure
+     * @param conf configuration details for the whitebox test setup
      */
     public void whitebox(TestSuite jvmTestSuite, Action<WhiteboxJvmTestSuite> conf) {
         if (jvmTestSuite instanceof JvmTestSuite) {
