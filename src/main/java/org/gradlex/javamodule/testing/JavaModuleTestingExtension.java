@@ -16,6 +16,7 @@
 
 package org.gradlex.javamodule.testing;
 
+import org.gradle.api.file.FileCollection;
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
 import org.gradlex.javamodule.testing.internal.bridges.JavaModuleDependenciesBridge;
 import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestCompileArgumentProvider;
@@ -134,7 +135,9 @@ public abstract class JavaModuleTestingExtension {
         SourceSet testSources = jvmTestSuite.getSources();
         tasks.named(testSources.getCompileJavaTaskName(), JavaCompile.class, compileJava -> {
             SourceSet sourcesUnderTest = whiteboxJvmTestSuite.getSourcesUnderTest().get();
+
             compileJava.setClasspath(sourcesUnderTest.getOutput().plus(configurations.getByName(testSources.getCompileClasspathConfigurationName())));
+            FileCollection syntheticModuleInfoFolders = JavaModuleDependenciesBridge.addRequiresRuntimeSupport(project, compileJava, sourcesUnderTest);
 
             WhiteboxTestCompileArgumentProvider argumentProvider = (WhiteboxTestCompileArgumentProvider) compileJava.getOptions().getCompilerArgumentProviders().stream()
                     .filter(p -> p instanceof WhiteboxTestCompileArgumentProvider).findFirst().orElseGet(() -> {
@@ -142,6 +145,7 @@ public abstract class JavaModuleTestingExtension {
                                 sourcesUnderTest.getJava().getSrcDirs(),
                                 testSources.getJava().getSrcDirs(),
                                 compileJava,
+                                syntheticModuleInfoFolders,
                                 moduleDetector,
                                 moduleInfoParser);
                         compileJava.getOptions().getCompilerArgumentProviders().add(newProvider);

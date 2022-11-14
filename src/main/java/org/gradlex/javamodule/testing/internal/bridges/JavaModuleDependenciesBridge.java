@@ -17,8 +17,12 @@
 package org.gradlex.javamodule.testing.internal.bridges;
 
 import org.gradle.api.Project;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.compile.JavaCompile;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class JavaModuleDependenciesBridge {
@@ -31,7 +35,22 @@ public class JavaModuleDependenciesBridge {
         try {
             Method gav = javaModuleDependencies.getClass().getMethod("gav", String.class);
             return (Provider<?>) gav.invoke(javaModuleDependencies, moduleName);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static FileCollection addRequiresRuntimeSupport(Project project, JavaCompile task, SourceSet sourceSet) {
+        Object javaModuleDependencies = project.getExtensions().findByName("javaModuleDependencies");
+        if (javaModuleDependencies == null) {
+            return project.getObjects().fileCollection();
+        }
+        try {
+            Method gav = javaModuleDependencies.getClass().getMethod("addRequiresRuntimeSupport", JavaCompile.class, SourceSet.class);
+            return (FileCollection) gav.invoke(javaModuleDependencies, task, sourceSet);
+        } catch (NoSuchMethodException e) {
+            return project.getObjects().fileCollection();
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }

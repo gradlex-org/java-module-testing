@@ -66,4 +66,40 @@ class JavaModuleDependenciesBridgeTest extends Specification {
         then:
         result.task(":app:test").outcome == TaskOutcome.SUCCESS
     }
+
+    def "compiles with provides runtime directives"() {
+        given:
+        appBuildFile << '''
+            dependencies.constraints {
+                javaModuleDependencies {
+                    implementation(gav("org.slf4j", "2.0.3"))
+                    implementation(gav("org.slf4j.simple", "2.0.3"))
+                }
+            }
+            javaModuleDependencies {
+                moduleNameToGA.put("com.example.lib", "com.example:lib")
+            }
+            javaModuleTesting.whitebox(testing.suites["test"]) {
+                requires.add("org.junit.jupiter.api")
+                requires.add("com.example.lib")
+                opensTo.add("org.junit.platform.commons")
+            }
+        '''
+        appModuleInfoFile << '''
+            module com.example.app {
+                requires org.slf4j;
+                requires /*runtime*/ org.slf4j.simple;
+            }
+        '''
+        libModuleInfoFile << '''
+            module com.example.lib { 
+            }
+        '''
+
+        when:
+        def result = runTests()
+
+        then:
+        result.task(":app:compileTestJava").outcome == TaskOutcome.SUCCESS
+    }
 }

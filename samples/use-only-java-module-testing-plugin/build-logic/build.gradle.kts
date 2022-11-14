@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation("org.gradlex:java-module-testing:1.0")
+    implementation("org.gradlex:java-module-testing:1.1")
 }

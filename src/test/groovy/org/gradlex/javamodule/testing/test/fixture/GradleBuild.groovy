@@ -29,7 +29,7 @@ class GradleBuild {
 
         settingsFile << '''
             pluginManagement {
-                plugins { id("org.gradlex.java-module-dependencies") version "1.0" }
+                plugins { id("org.gradlex.java-module-dependencies") version "1.2" }
             }
             dependencyResolutionManagement { repositories.mavenCentral() }
             includeBuild(".")

@@ -16,6 +16,7 @@
 
 package org.gradlex.javamodule.testing.internal.provider;
 
+import org.gradle.api.file.FileCollection;
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.internal.jvm.JavaModuleDetector;
@@ -31,17 +32,19 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
     private final Set<File> mainSourceFolders;
     private final Set<File> testSourceFolders;
     private final JavaCompile task;
+    private final FileCollection syntheticModuleInfoFolders;
     private final JavaModuleDetector moduleDetector;
     private final ModuleInfoParser moduleInfoParser;
 
     private final List<String> allTestRequires = new ArrayList<>();
 
     public WhiteboxTestCompileArgumentProvider(
-            Set<File> mainSourceFolders, Set<File> testSourceFolders, JavaCompile task,
+            Set<File> mainSourceFolders, Set<File> testSourceFolders, JavaCompile task, FileCollection syntheticModuleInfoFolders,
             JavaModuleDetector moduleDetector, ModuleInfoParser moduleInfoParser) {
         this.mainSourceFolders = mainSourceFolders;
         this.testSourceFolders = testSourceFolders;
         this.task = task;
+        this.syntheticModuleInfoFolders = syntheticModuleInfoFolders;
         this.moduleDetector = moduleDetector;
         this.moduleInfoParser = moduleInfoParser;
     }
@@ -60,7 +63,8 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
 
         // Since for Gradle this sources set does not look like a module, we have to define the module path ourselves
         args.add("--module-path");
-        args.add(moduleDetector.inferModulePath(true, task.getClasspath()).getFiles().stream().map(File::getPath).collect(Collectors.joining(cpSeparator)));
+        args.add(moduleDetector.inferModulePath(true, task.getClasspath().plus(syntheticModuleInfoFolders)).getFiles().stream()
+                .map(File::getPath).collect(Collectors.joining(cpSeparator)));
 
         for (String testRequires : allTestRequires) {
             args.add("--add-modules");
