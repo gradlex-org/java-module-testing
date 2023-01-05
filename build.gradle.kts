@@ -1,6 +1,6 @@
 plugins {
     id("groovy")
-    id("org.gradlex.internal.plugin-publish-conventions") version "0.4"
+    id("org.gradlex.internal.plugin-publish-conventions") version "0.5"
 }
 
 group = "org.gradlex"
