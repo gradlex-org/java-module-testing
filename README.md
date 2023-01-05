@@ -34,6 +34,7 @@ that shows all plugins in combination.
 For a quick start, you can find some samples here:
 * [samples/use-all-java-module-plugins](samples/use-all-java-module-plugins)
 * [samples/use-only-java-module-testing-plugin](samples/use-only-java-module-testing-plugin)
+* [samples/use-with-test-fixtures](samples/use-with-test-fixtures)
 
 For general information about how to structure Gradle builds and apply community plugins like this one to all subprojects
 you can check out my [Understanding Gradle video series](https://www.youtube.com/playlist?list=PLWQK2ZdV4Yl2k2OmC_gsjDpdIBTN0qqkE).

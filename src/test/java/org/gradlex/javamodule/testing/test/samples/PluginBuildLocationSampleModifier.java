@@ -21,7 +21,8 @@ import org.gradle.exemplar.model.Sample;
 import org.gradle.exemplar.test.runner.SampleModifier;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PluginBuildLocationSampleModifier implements SampleModifier {
     @Override
@@ -31,7 +32,7 @@ public class PluginBuildLocationSampleModifier implements SampleModifier {
         sampleIn.getCommands().add(
                 new Command(new File(pluginProjectDir, "gradlew").getAbsolutePath(),
                         cmd.getExecutionSubdirectory(),
-                        Arrays.asList("build", "run", "-PpluginLocation=" + pluginProjectDir.getAbsolutePath()),
+                        Stream.concat(cmd.getArgs().stream(), Stream.of("build", "--warning-mode=all","-PpluginLocation=" + pluginProjectDir.getAbsolutePath())).collect(Collectors.toList()),
                         cmd.getFlags(),
                         cmd.getExpectedOutput(),
                         cmd.isExpectFailure(),
