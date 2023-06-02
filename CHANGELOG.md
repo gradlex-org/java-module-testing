@@ -1,5 +1,8 @@
 # Java Module Testing Gradle Plugin - Changelog
 
+## Version 1.2
+* [#5](https://github.com/gradlex-org/java-module-testing/issues/5) Improve module-info parsing
+
 ## Version 1.1
 * Integrate with https://github.com/gradlex-org/java-module-dependencies/issues/19
 

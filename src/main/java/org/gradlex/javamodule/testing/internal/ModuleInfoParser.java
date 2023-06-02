@@ -47,11 +47,31 @@ public class ModuleInfoParser {
         return null;
     }
 
-    private String moduleName(String moduleInfoFileContent) {
+    static String moduleName(String moduleInfoFileContent) {
+        boolean inComment = false;
+        boolean moduleKeywordFound = false;
+
         for(String line: moduleInfoFileContent.split("\n")) {
-            List<String> tokens = Arrays.asList(line.replace("{","").trim().split("\\s+"));
-            if (!"//".equals(tokens.get(0)) && tokens.contains("module")) {
-                return tokens.get(tokens.size() - 1);
+            String cleanedLine = line
+                    .replaceAll("/\\*.*\\*/", "") // open & close in this line
+                    .replaceAll("//.*", ""); // line comment
+            inComment = inComment || cleanedLine.contains("/*");
+            cleanedLine = cleanedLine.replaceAll("/\\*.*", ""); // open in this line
+            inComment = inComment && !line.contains("*/");
+            cleanedLine = cleanedLine.replaceAll(".*\\*/", "").trim(); // closing part of comment
+
+            if (inComment) {
+                continue;
+            }
+
+            List<String> tokens = Arrays.asList(cleanedLine.split("\\s+"));
+            if (moduleKeywordFound && !tokens.isEmpty()) {
+                return tokens.get(0);
+            } else  if (tokens.indexOf("module") == 0) {
+                moduleKeywordFound = true;
+            }
+            if (tokens.size() > 1) {
+                return tokens.get(1);
             }
         }
         return null;
