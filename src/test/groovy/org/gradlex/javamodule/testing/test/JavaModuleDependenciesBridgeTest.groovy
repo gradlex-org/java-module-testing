@@ -38,7 +38,6 @@ class JavaModuleDependenciesBridgeTest extends Specification {
         result.task(":app:test").outcome == TaskOutcome.SUCCESS
     }
 
-    @Ignore // See: https://github.com/gradlex-org/java-module-testing/issues/3
     def "respects moduleNamePrefixToGroup mappings"() {
         given:
         appBuildFile << '''
