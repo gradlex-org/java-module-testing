@@ -31,6 +31,11 @@ pluginPublishConventions {
     }
 }
 
+// TODO This needs to be included in org.gradlex.internal.plugin-publish-conventions
+signing {
+    useInMemoryPgpKeys(providers.environmentVariable("SIGNING_KEY").orNull, providers.environmentVariable("SIGNING_PASSPHRASE").orNull)
+}
+
 tasks.test {
     useJUnitPlatform()
     maxParallelForks = 4
