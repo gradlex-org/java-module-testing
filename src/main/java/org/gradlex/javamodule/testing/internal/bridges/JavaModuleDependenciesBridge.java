@@ -22,8 +22,9 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.compile.JavaCompile;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 
 public class JavaModuleDependenciesBridge {
 
@@ -50,6 +51,31 @@ public class JavaModuleDependenciesBridge {
             return (FileCollection) gav.invoke(javaModuleDependencies, task, sourceSet);
         } catch (NoSuchMethodException e) {
             return project.getObjects().fileCollection();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<String> getRuntimeClasspathModules(Project project, SourceSet sourceSet) {
+        return getClasspathModules("getRuntimeClasspathModules", project, sourceSet);
+    }
+
+    public static List<String> getCompileClasspathModules(Project project, SourceSet sourceSet) {
+        return getClasspathModules("getCompileClasspathModules", project, sourceSet);
+    }
+
+    public static List<String> getClasspathModules(String getter, Project project, SourceSet sourceSet) {
+        Object moduleInfoDslExtension = project.getExtensions().findByName(sourceSet.getName() + "ModuleInfo");
+        if (moduleInfoDslExtension == null) {
+            return Collections.emptyList();
+        }
+        try {
+            Method gav = moduleInfoDslExtension.getClass().getMethod(getter);
+            @SuppressWarnings("unchecked")
+            List<String> modules = (List<String>) gav.invoke(moduleInfoDslExtension);
+            return modules;
+        } catch (NoSuchMethodException e) {
+            return Collections.emptyList();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

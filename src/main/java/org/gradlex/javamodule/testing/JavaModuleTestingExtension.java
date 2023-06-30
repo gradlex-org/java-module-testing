@@ -151,6 +151,7 @@ public abstract class JavaModuleTestingExtension {
                         compileJava.getOptions().getCompilerArgumentProviders().add(newProvider);
                         return newProvider;
                     });
+            argumentProvider.testRequires(JavaModuleDependenciesBridge.getCompileClasspathModules(project, testSources));
             argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires().get());
         });
 
@@ -172,6 +173,7 @@ public abstract class JavaModuleTestingExtension {
                         test.getJvmArgumentProviders().add(newProvider);
                         return newProvider;
                     });
+            argumentProvider.testRequires(JavaModuleDependenciesBridge.getRuntimeClasspathModules(project, testSources));
             argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires().get());
             argumentProvider.testOpensTo(whiteboxJvmTestSuite.getOpensTo().get());
         });
