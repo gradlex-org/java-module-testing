@@ -17,6 +17,7 @@
 package org.gradlex.javamodule.testing;
 
 import org.gradle.api.file.FileCollection;
+import org.gradle.testing.base.TestingExtension;
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
 import org.gradlex.javamodule.testing.internal.bridges.JavaModuleDependenciesBridge;
 import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestCompileArgumentProvider;
@@ -39,6 +40,7 @@ import org.gradle.jvm.tasks.Jar;
 import org.gradle.testing.base.TestSuite;
 
 import javax.inject.Inject;
+import java.io.File;
 
 @SuppressWarnings("UnstableApiUsage")
 public abstract class JavaModuleTestingExtension {
@@ -51,6 +53,19 @@ public abstract class JavaModuleTestingExtension {
     public JavaModuleTestingExtension(Project project, JavaModuleDetector moduleDetector) {
         this.project = project;
         this.moduleDetector = moduleDetector;
+
+        TestingExtension testing = project.getExtensions().getByType(TestingExtension.class);
+        testing.getSuites().withType(JvmTestSuite.class).configureEach(jvmTestSuite -> {
+            boolean isTestModule = jvmTestSuite.getSources().getJava().getSrcDirs().stream().anyMatch(src -> new File(src, "module-info.java").exists());
+            if ("test".equals(jvmTestSuite.getName())) {
+                jvmTestSuite.useJUnitJupiter(); // override old Gradle default to default to JUnit5 for all suites
+            }
+            if (isTestModule) {
+                blackbox(jvmTestSuite);
+            } else {
+                whitebox(jvmTestSuite, conf -> conf.getOpensTo().add("org.junit.platform.commons"));
+            }
+        });
     }
 
     /**
