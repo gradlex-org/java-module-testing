@@ -2,7 +2,6 @@ package org.gradlex.javamodule.testing.test
 
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradlex.javamodule.testing.test.fixture.GradleBuild
-import spock.lang.Ignore
 import spock.lang.Specification
 
 class JavaModuleDependenciesBridgeTest extends Specification {
@@ -14,20 +13,20 @@ class JavaModuleDependenciesBridgeTest extends Specification {
         given:
         appBuildFile << '''
             javaModuleDependencies {
-                moduleNameToGA.put("com.example.lib", "com.example:lib")
+                moduleNameToGA.put("org.example.lib", "org.example:lib")
             }
             javaModuleTesting.whitebox(testing.suites["test"]) {
                 requires.add("org.junit.jupiter.api")
-                requires.add("com.example.lib")
+                requires.add("org.example.lib")
                 opensTo.add("org.junit.platform.commons")
             }
         '''
         appModuleInfoFile << '''
-            module com.example.app { 
+            module org.example.app { 
             }
         '''
         libModuleInfoFile << '''
-            module com.example.lib { 
+            module org.example.lib { 
             }
         '''
 
@@ -42,20 +41,20 @@ class JavaModuleDependenciesBridgeTest extends Specification {
         given:
         appBuildFile << '''
             javaModuleDependencies {
-                moduleNamePrefixToGroup.put("com.example.", "com.example")
+                moduleNamePrefixToGroup.put("org.example.", "org.example")
             }
             javaModuleTesting.whitebox(testing.suites["test"]) {
                 requires.add("org.junit.jupiter.api")
-                requires.add("com.example.lib")
+                requires.add("org.example.lib")
                 opensTo.add("org.junit.platform.commons")
             }
         '''
         appModuleInfoFile << '''
-            module com.example.app { 
+            module org.example.app { 
             }
         '''
         libModuleInfoFile << '''
-            module com.example.lib { 
+            module org.example.lib { 
             }
         '''
 
@@ -76,22 +75,22 @@ class JavaModuleDependenciesBridgeTest extends Specification {
                 }
             }
             javaModuleDependencies {
-                moduleNameToGA.put("com.example.lib", "com.example:lib")
+                moduleNameToGA.put("org.example.lib", "org.example:lib")
             }
             javaModuleTesting.whitebox(testing.suites["test"]) {
                 requires.add("org.junit.jupiter.api")
-                requires.add("com.example.lib")
+                requires.add("org.example.lib")
                 opensTo.add("org.junit.platform.commons")
             }
         '''
         appModuleInfoFile << '''
-            module com.example.app {
+            module org.example.app {
                 requires org.slf4j;
                 requires /*runtime*/ org.slf4j.simple;
             }
         '''
         libModuleInfoFile << '''
-            module com.example.lib { 
+            module org.example.lib { 
             }
         '''
 

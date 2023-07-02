@@ -20,7 +20,7 @@ class CustomizationTest extends Specification {
             }
         '''
         appModuleInfoFile << '''
-            module org.gradlex.test.app { 
+            module org.example.app {
             }
         '''
 
@@ -38,11 +38,13 @@ class CustomizationTest extends Specification {
             javaModuleTesting.blackbox(testing.suites["test"])
         '''
         appModuleInfoFile << '''
-            module org.gradlex.test.app { 
+            module org.example.app {
+                exports org.example.app;
             }
         '''
         appTestModuleInfoFile << '''
-            module org.gradlex.test.app.test { 
+            open module org.example.app.test { 
+                requires org.example.app;
                 requires org.junit.jupiter.api;
             }
         '''

@@ -42,24 +42,34 @@ class GradleBuild {
                 id("org.gradlex.java-module-testing")
                 id("application")
             }
-            group = "com.example"
+            group = "org.example"
             dependencies {
                 testImplementation(platform("org.junit:junit-bom:5.9.0"))
             }
             application {
-                mainModule.set("org.gradlex.test.app")
-                mainClass.set("org.gradlex.test.app.Main")
+                mainModule.set("org.example.app")
+                mainClass.set("org.example.app.Main")
             }
         '''
-        file("app/src/test/java/com/example/AppTest.java") << '''
-            package com.example;
+        file("app/src/main/java/org/example/app/Main.java") << '''
+            package org.example.app;
+            
+            public class Main {
+                public void main(String... args) {
+                }
+            }
+        '''
+        file("app/src/test/java/org/example/app/test/MainTest.java") << '''
+            package org.example.app.test;
             
             import org.junit.jupiter.api.Test;
+            import org.example.app.Main;
             
-            public class AppTest {
+            public class MainTest {
                 
                 @Test
                 void testApp() {
+                    new Main();
                 }
             }
         '''
@@ -70,7 +80,7 @@ class GradleBuild {
                 id("org.gradlex.java-module-testing")
                 id("java-library")
             }
-            group = "com.example"
+            group = "org.example"
         '''
     }
 
