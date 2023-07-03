@@ -60,37 +60,27 @@ plugins {
 }
 ```
 
-## Configure a Blackbox Test Suite
+## Blackbox Test Suites
 
-To turn the existing JVM Test Suite _integtest_ ito a Blackbox Test Suite:
-
-```
-javaModuleTesting.blackbox(testing.suites["integtest"])
-```
-
-You can create and/or configure a different test suite as long as you wrap it in `javaModuleTesting.blackbox(...)`.
-See documentation on [JVM Test Suites](https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html#sec:jvm_test_suite_configuration)
-for more details.
-
-It is expected that a blackbox _test source set_ has its own `module-info.java`.
+The plugin automatically turns [JVM Test Suites](https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html) into _Blackbox Test Suites_ if the `src/<test-suite-name>/module-info.java` file exists.
 A blackbox test suite is a separate module itself.
+See documentation on [JVM Test Suites](https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html#sec:jvm_test_suite_configuration) for more details on creating and configuring test suites.
 
-## Configure a Whitebox Test Suite
+## Whitebox Test Suites
 
-To turn the existing JVM Test Suite _test_ ito a Whitebox Test Suite:
+The plugin automatically turns [JVM Test Suites](https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html) **without** `module-info.java` file into _Whitebox Test Suites_.
+Whitebox Test Suites might require additional configuration, which can be done like this:
 
 ```
 javaModuleTesting.whitebox(testing.suites["test"]) {
     requires.add("org.junit.jupiter.api")
-    opensTo.add("org.junit.platform.commons")
+    // opensTo.add("org.junit.platform.commons") <-- opensTo 'org.junit.platform.commons' is done by default
 }
 ```
 
-You can create and/or configure a different test suite as long as you wrap it in `javaModuleTesting.whitebox(...)`.
-See documentation on [JVM Test Suites](https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html#sec:jvm_test_suite_configuration)
-for more details.
+See documentation on [JVM Test Suites](https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html#sec:jvm_test_suite_configuration) for more details on creating and configuring test suites.
 
-It is expected that a whitebox _test source set_ does **not** have a `module-info.java`.
+A whitebox _test source set_ does **not** have a `module-info.java`.
 Instead, the _main_ and _test_ classes will be patched together and the test will run in the _main_ module which now includes the test classes as well.
 Additional `requires` for the test are defined as shown above.
 If the _sources under test_ are located in a different source set (not `main`), this can be configured via `sourcesUnderTest.set("source-set-name")`.
