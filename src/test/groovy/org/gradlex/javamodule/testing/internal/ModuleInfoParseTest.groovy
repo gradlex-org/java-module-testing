@@ -59,4 +59,20 @@ class ModuleInfoParseTest extends Specification {
         expect:
         nameFromFile == 'some.thing'
     }
+
+    def "finds module name when open keyword is used"() {
+        given:
+        def nameFromFile = ModuleInfoParser.moduleName('''
+            open module /*module some.other*/ some.thing { /* module
+            odd comment*/ requires transitive foo.bar.la;
+                requires/* weird comment*/ static foo.bar.lo;
+                requires /*something to say*/foo.bar.li; /*
+                    requires only.a.comment
+                */
+            }
+        ''')
+
+        expect:
+        nameFromFile == 'some.thing'
+    }
 }

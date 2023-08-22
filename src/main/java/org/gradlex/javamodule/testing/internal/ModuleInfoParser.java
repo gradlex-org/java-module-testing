@@ -67,11 +67,14 @@ public class ModuleInfoParser {
             List<String> tokens = Arrays.asList(cleanedLine.split("\\s+"));
             if (moduleKeywordFound && !tokens.isEmpty()) {
                 return tokens.get(0);
-            } else  if (tokens.indexOf("module") == 0) {
-                moduleKeywordFound = true;
             }
-            if (tokens.size() > 1) {
-                return tokens.get(1);
+
+            int moduleKeywordIndex = tokens.indexOf("module");
+            if (moduleKeywordIndex == 0 || moduleKeywordIndex == 1) {
+                if (tokens.size() > moduleKeywordIndex) {
+                    return tokens.get(moduleKeywordIndex + 1);
+                }
+                moduleKeywordFound = true;
             }
         }
         return null;
