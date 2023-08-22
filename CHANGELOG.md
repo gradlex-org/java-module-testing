@@ -1,5 +1,8 @@
 # Java Module Testing Gradle Plugin - Changelog
 
+## Version 1.2.1
+* Fix 'module-info.java' parsing bug
+
 ## Version 1.2
 * [#8](https://github.com/gradlex-org/java-module-testing/issues/8) Automatically configure test suites based on the existence of a `module-info.java` file
 * [#5](https://github.com/gradlex-org/java-module-testing/issues/5) Improve module-info parsing
