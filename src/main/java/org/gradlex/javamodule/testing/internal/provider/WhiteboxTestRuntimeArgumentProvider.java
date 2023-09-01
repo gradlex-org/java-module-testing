@@ -23,6 +23,7 @@ import org.gradle.process.CommandLineArgumentProvider;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,7 +60,7 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
     public Iterable<String> asArguments() {
         String moduleName = moduleInfoParser.moduleName(mainSourceFolders);
 
-        List<String> allTestClassPackages = new ArrayList<>();
+        Set<String> allTestClassPackages = new HashSet<>();
         testClassesFolders.get().getAsFileTree().visit(file -> {
             String path = file.getPath();
             if (path.endsWith(".class") && path.contains("/")) {
