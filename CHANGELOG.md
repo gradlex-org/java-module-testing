@@ -1,5 +1,8 @@
 # Java Module Testing Gradle Plugin - Changelog
 
+## Version 1.2.2
+* No duplicated '--add-opens' runtime args
+
 ## Version 1.2.1
 * Fix 'module-info.java' parsing bug
 
