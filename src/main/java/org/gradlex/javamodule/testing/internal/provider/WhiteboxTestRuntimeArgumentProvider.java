@@ -16,16 +16,16 @@
 
 package org.gradlex.javamodule.testing.internal.provider;
 
-import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
 import org.gradle.api.file.Directory;
 import org.gradle.api.provider.Provider;
 import org.gradle.process.CommandLineArgumentProvider;
+import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentProvider {
     private final Set<File> mainSourceFolders;
@@ -60,7 +60,7 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
     public Iterable<String> asArguments() {
         String moduleName = moduleInfoParser.moduleName(mainSourceFolders);
 
-        Set<String> allTestClassPackages = new HashSet<>();
+        Set<String> allTestClassPackages = new TreeSet<>();
         testClassesFolders.get().getAsFileTree().visit(file -> {
             String path = file.getPath();
             if (path.endsWith(".class") && path.contains("/")) {
