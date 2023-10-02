@@ -13,7 +13,7 @@ java {
 
 dependencies {
     testImplementation("org.spockframework:spock-core:2.1-groovy-3.0")
-    testImplementation("org.gradle.exemplar:samples-check:1.0.1")
+    testImplementation("org.gradle.exemplar:samples-check:1.0.2")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
 }
 
