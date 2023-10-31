@@ -9,10 +9,10 @@ import java.io.InputStreamReader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AppWhiteboxTest {
+class AppWhiteboxTest {
 
     @Test
-    public void printDataTest() throws IOException {
+    void printDataTest() throws IOException {
         App.printData();
         assertEquals("org.my.app", AppWhiteboxTest.class.getModule().getName());
 

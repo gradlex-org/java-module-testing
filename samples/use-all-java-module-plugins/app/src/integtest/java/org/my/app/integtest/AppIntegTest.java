@@ -10,10 +10,10 @@ import java.io.InputStreamReader;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AppIntegTest {
+class AppIntegTest {
 
     @Test
-    public void appDoesNotExplode() throws IOException {
+    void appDoesNotExplode() throws IOException {
         assertTrue(App.doWork());
 
         try (InputStream is = AppIntegTest.class.getResourceAsStream("AppTestData.txt")) {
