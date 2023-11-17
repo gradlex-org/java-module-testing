@@ -17,6 +17,8 @@
 package org.gradlex.javamodule.testing.internal.provider;
 
 import org.gradle.api.file.Directory;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
 import org.gradle.process.CommandLineArgumentProvider;
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
@@ -34,22 +36,32 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
     private final File testResources;
     private final ModuleInfoParser moduleInfoParser;
 
-    private final List<String> allTestRequires = new ArrayList<>();
-    private final List<String> allTestOpensTo = new ArrayList<>();
+    private final ListProperty<String> allTestRequires;
+    private final ListProperty<String> allTestOpensTo;
 
     public WhiteboxTestRuntimeArgumentProvider(Set<File> mainSourceFolders,
-           Provider<Directory> testClassesFolders, File resourcesUnderTest, File testResources,
-           ModuleInfoParser moduleInfoParser) {
+                                               Provider<Directory> testClassesFolders, File resourcesUnderTest, File testResources,
+                                               ModuleInfoParser moduleInfoParser, ObjectFactory objects) {
 
         this.mainSourceFolders = mainSourceFolders;
         this.testClassesFolders = testClassesFolders;
         this.resourcesUnderTest = resourcesUnderTest;
         this.testResources = testResources;
         this.moduleInfoParser = moduleInfoParser;
+        this.allTestRequires = objects.listProperty(String.class);
+        this.allTestOpensTo = objects.listProperty(String.class);
+    }
+
+    public void testRequires(Provider<List<String>> testRequires) {
+        allTestRequires.addAll(testRequires);
     }
 
     public void testRequires(List<String> testRequires) {
         allTestRequires.addAll(testRequires);
+    }
+
+    public void testOpensTo(Provider<List<String>> testRequires) {
+        allTestOpensTo.addAll(testRequires);
     }
 
     public void testOpensTo(List<String> testRequires) {
@@ -70,7 +82,7 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
 
         List<String> args = new ArrayList<>();
 
-        for (String testRequires : allTestRequires) {
+        for (String testRequires : allTestRequires.get()) {
             args.add("--add-modules");
             args.add(testRequires);
             args.add("--add-reads");
@@ -78,7 +90,7 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
         }
 
         for (String packageName : allTestClassPackages) {
-            for (String opensTo : allTestOpensTo) {
+            for (String opensTo : allTestOpensTo.get()) {
                 args.add("--add-opens");
                 args.add(moduleName + "/" + packageName + "=" + opensTo);
             }

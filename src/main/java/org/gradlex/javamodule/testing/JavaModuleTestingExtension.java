@@ -16,17 +16,12 @@
 
 package org.gradlex.javamodule.testing;
 
-import org.gradle.api.file.FileCollection;
-import org.gradle.testing.base.TestingExtension;
-import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
-import org.gradlex.javamodule.testing.internal.bridges.JavaModuleDependenciesBridge;
-import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestCompileArgumentProvider;
-import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestRuntimeArgumentProvider;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.jvm.JvmTestSuite;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
@@ -38,6 +33,11 @@ import org.gradle.api.tasks.testing.Test;
 import org.gradle.internal.jvm.JavaModuleDetector;
 import org.gradle.jvm.tasks.Jar;
 import org.gradle.testing.base.TestSuite;
+import org.gradle.testing.base.TestingExtension;
+import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
+import org.gradlex.javamodule.testing.internal.bridges.JavaModuleDependenciesBridge;
+import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestCompileArgumentProvider;
+import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestRuntimeArgumentProvider;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -71,7 +71,7 @@ public abstract class JavaModuleTestingExtension {
     /**
      * Turn the given JVM Test Suite into a Blackbox Test Suite.
      * For example:
-     *
+     * <p>
      * javaModuleTesting.blackbox(testing.suites["integtest"])
      *
      * @param jvmTestSuite the JVM Test Suite to configure
@@ -85,11 +85,12 @@ public abstract class JavaModuleTestingExtension {
     /**
      * Turn the given JVM Test Suite into a Whitebox Test Suite.
      * For example:
-     *
+     * <p>
      * javaModuleTesting.whitebox(testing.suites["test"])
      *
      * @param jvmTestSuite the JVM Test Suite to configure
      */
+    @SuppressWarnings("unused")
     public void whitebox(TestSuite jvmTestSuite) {
         whitebox(jvmTestSuite, NO_OP_ACTION);
     }
@@ -98,9 +99,9 @@ public abstract class JavaModuleTestingExtension {
      * Turn the given JVM Test Suite into a Whitebox Test Suite.
      * If needed, configure additional 'requires' and open the
      * test packages for reflection.
-     *
+     * <p>
      * For example, for JUnit 5, you need at least:
-     *
+     * <p>
      * javaModuleTesting.whitebox(testing.suites["test"]) {
      *   requires.add("org.junit.jupiter.api")
      *   opensTo.add("org.junit.platform.commons")
@@ -162,12 +163,13 @@ public abstract class JavaModuleTestingExtension {
                                 compileJava,
                                 syntheticModuleInfoFolders,
                                 moduleDetector,
-                                moduleInfoParser);
+                                moduleInfoParser,
+                                project.getObjects());
                         compileJava.getOptions().getCompilerArgumentProviders().add(newProvider);
                         return newProvider;
                     });
             argumentProvider.testRequires(JavaModuleDependenciesBridge.getCompileClasspathModules(project, testSources));
-            argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires().get());
+            argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires());
         });
 
         tasks.named(testSources.getName(), Test.class, test -> {
@@ -184,13 +186,14 @@ public abstract class JavaModuleTestingExtension {
                                 testSources.getJava().getClassesDirectory(),
                                 sourcesUnderTest.getOutput().getResourcesDir(),
                                 testSources.getOutput().getResourcesDir(),
-                                moduleInfoParser);
+                                moduleInfoParser,
+                                project.getObjects());
                         test.getJvmArgumentProviders().add(newProvider);
                         return newProvider;
                     });
             argumentProvider.testRequires(JavaModuleDependenciesBridge.getRuntimeClasspathModules(project, testSources));
-            argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires().get());
-            argumentProvider.testOpensTo(whiteboxJvmTestSuite.getOpensTo().get());
+            argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires());
+            argumentProvider.testOpensTo(whiteboxJvmTestSuite.getOpensTo());
         });
 
         Configuration implementation = configurations.getByName(testSources.getImplementationConfigurationName());
