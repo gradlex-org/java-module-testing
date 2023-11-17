@@ -31,6 +31,26 @@ class CustomizationTest extends Specification {
         result.task(":app:test").outcome == TaskOutcome.SUCCESS
     }
 
+    def "can define whitebox test suite requires in module-info file"() {
+        given:
+        appModuleInfoFile << '''
+            module org.example.app {
+            }
+        '''
+        appWhiteboxTestModuleInfoFile << '''
+            module org.example.app.test {
+                requires org.example.app;
+                requires org.junit.jupiter.api;
+            }
+        '''
+
+        when:
+        def result = runTests()
+
+        then:
+        result.task(":app:test").outcome == TaskOutcome.SUCCESS
+    }
+
     def "repetitive blackbox calls on the same test suite have no effect"() {
         given:
         appBuildFile << '''

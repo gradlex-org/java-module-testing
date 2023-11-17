@@ -80,6 +80,27 @@ javaModuleTesting.whitebox(testing.suites["test"]) {
 
 See documentation on [JVM Test Suites](https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html#sec:jvm_test_suite_configuration) for more details on creating and configuring test suites.
 
+Alternatively, you can put the `requires` into a `module-info.java` file using the same notation that you would use for blackbox tests.
+For this, you need to create the file in `<src-set-location>/java9/module-info.java`. For example:
+
+```
+src
+  ├── main
+  │   └── java
+  │       ├── module-info.java
+  │       └── ...
+  └── test
+      ├── java
+      │   └── ...
+      └── java9
+          └── module-info.java
+              | module org.example.app.test {
+              |   requires org.example.app; // 'main' module into which the tests are patched
+              |   requires org.junit.jupiter.api;
+              | }
+}
+```
+
 A whitebox _test source set_ does **not** have a `module-info.java`.
 Instead, the _main_ and _test_ classes will be patched together and the test will run in the _main_ module which now includes the test classes as well.
 Additional `requires` for the test are defined as shown above.
