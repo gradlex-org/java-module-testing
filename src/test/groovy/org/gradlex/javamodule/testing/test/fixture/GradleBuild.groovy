@@ -13,6 +13,7 @@ class GradleBuild {
     final File appBuildFile
     final File appModuleInfoFile
     final File appTestModuleInfoFile
+    final File appWhiteboxTestModuleInfoFile
     final File libBuildFile
     final File libModuleInfoFile
 
@@ -24,6 +25,7 @@ class GradleBuild {
         this.appBuildFile = file("app/build.gradle.kts")
         this.appModuleInfoFile = file("app/src/main/java/module-info.java")
         this.appTestModuleInfoFile = file("app/src/test/java/module-info.java")
+        this.appWhiteboxTestModuleInfoFile = file("app/src/test/java9/module-info.java")
         this.libBuildFile = file("lib/build.gradle.kts")
         this.libModuleInfoFile = file("lib/src/main/java/module-info.java")
 

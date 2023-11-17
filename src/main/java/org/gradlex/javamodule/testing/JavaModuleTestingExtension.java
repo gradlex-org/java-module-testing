@@ -22,6 +22,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.jvm.JvmTestSuite;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
@@ -35,12 +36,16 @@ import org.gradle.jvm.tasks.Jar;
 import org.gradle.testing.base.TestSuite;
 import org.gradle.testing.base.TestingExtension;
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
+import org.gradlex.javamodule.testing.internal.ModuleInfoRequiresParser;
 import org.gradlex.javamodule.testing.internal.bridges.JavaModuleDependenciesBridge;
 import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestCompileArgumentProvider;
 import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestRuntimeArgumentProvider;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
 public abstract class JavaModuleTestingExtension {
@@ -114,9 +119,29 @@ public abstract class JavaModuleTestingExtension {
         if (jvmTestSuite instanceof JvmTestSuite) {
             WhiteboxJvmTestSuite whiteboxJvmTestSuite = project.getObjects().newInstance(WhiteboxJvmTestSuite.class);
             whiteboxJvmTestSuite.getSourcesUnderTest().convention(project.getExtensions().getByType(SourceSetContainer.class).getByName(SourceSet.MAIN_SOURCE_SET_NAME));
+            whiteboxJvmTestSuite.getRequires().addAll(requiresFromModuleInfo((JvmTestSuite) jvmTestSuite, whiteboxJvmTestSuite.getSourcesUnderTest()));
             conf.execute(whiteboxJvmTestSuite);
             configureJvmTestSuiteForWhitebox((JvmTestSuite) jvmTestSuite, whiteboxJvmTestSuite);
         }
+    }
+
+    private Provider<List<String>> requiresFromModuleInfo(JvmTestSuite jvmTestSuite, Provider<SourceSet> sourcesUnderTest) {
+        RegularFile moduleInfoFile = project.getLayout().getProjectDirectory().file(whiteboxModuleInfo(jvmTestSuite).getAbsolutePath());
+        Provider<String> moduleInfoContent = project.getProviders().fileContents(moduleInfoFile).getAsText();
+        return moduleInfoContent.map(c -> {
+            ModuleInfoParser moduleInfoParser = new ModuleInfoParser(project.getLayout(), project.getProviders());
+            String mainModuleName = moduleInfoParser.moduleName(sourcesUnderTest.get().getAllJava().getSrcDirs());
+            List<String> requires = ModuleInfoRequiresParser.parse(moduleInfoContent.get());
+            if (requires.stream().anyMatch(r -> r.equals(mainModuleName))) {
+                return requires.stream().filter(r -> !r.equals(mainModuleName)).collect(Collectors.toList());
+            }
+            return Collections.<String>emptyList();
+        }).orElse(Collections.emptyList());
+    }
+
+    private File whiteboxModuleInfo(JvmTestSuite jvmTestSuite) {
+        File sourceSetDir = jvmTestSuite.getSources().getJava().getSrcDirs().iterator().next().getParentFile();
+        return new File(sourceSetDir, "java9/module-info.java");
     }
 
     private void configureJvmTestSuiteForBlackbox(JvmTestSuite jvmTestSuite) {
