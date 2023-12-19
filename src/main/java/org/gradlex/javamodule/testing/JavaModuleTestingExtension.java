@@ -174,11 +174,13 @@ public abstract class JavaModuleTestingExtension {
         ModuleInfoParser moduleInfoParser = new ModuleInfoParser(project.getLayout(), project.getProviders());
 
         SourceSet testSources = jvmTestSuite.getSources();
+        JavaModuleDependenciesBridge.addRequiresRuntimeSupport(project, whiteboxJvmTestSuite.getSourcesUnderTest().get(), jvmTestSuite.getSources());
+
         tasks.named(testSources.getCompileJavaTaskName(), JavaCompile.class, compileJava -> {
             SourceSet sourcesUnderTest = whiteboxJvmTestSuite.getSourcesUnderTest().get();
 
             compileJava.setClasspath(sourcesUnderTest.getOutput().plus(configurations.getByName(testSources.getCompileClasspathConfigurationName())));
-            FileCollection syntheticModuleInfoFolders = JavaModuleDependenciesBridge.addRequiresRuntimeSupport(project, compileJava, sourcesUnderTest);
+            FileCollection syntheticModuleInfoFolders = JavaModuleDependenciesBridge.addRequiresRuntimeSupportOld(project, compileJava, sourcesUnderTest);
 
             WhiteboxTestCompileArgumentProvider argumentProvider = (WhiteboxTestCompileArgumentProvider) compileJava.getOptions().getCompilerArgumentProviders().stream()
                     .filter(p -> p instanceof WhiteboxTestCompileArgumentProvider).findFirst().orElseGet(() -> {

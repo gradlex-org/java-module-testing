@@ -1,5 +1,8 @@
 # Java Module Testing Gradle Plugin - Changelog
 
+## Version 1.3.1
+* Improve interoperability with `java-module-dependencies` plugin
+
 ## Version 1.3
 * [#18](https://github.com/gradlex-org/java-module-testing/issues/18) Allow whitebox tests to define requires in `java9/module-info.java` (Thanks [brianoliver](https://github.com/brianoliver) for suggesting!)
 

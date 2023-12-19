@@ -41,14 +41,31 @@ public class JavaModuleDependenciesBridge {
         }
     }
 
-    public static FileCollection addRequiresRuntimeSupport(Project project, JavaCompile task, SourceSet sourceSet) {
+    public static void addRequiresRuntimeSupport(Project project, SourceSet sourceSetForModuleInfo, SourceSet sourceSetForClasspath) {
+        Object javaModuleDependencies = project.getExtensions().findByName("javaModuleDependencies");
+        if (javaModuleDependencies == null) {
+            return;
+        }
+        try {
+            Method addRequiresRuntimeSupport = javaModuleDependencies.getClass().getMethod("addRequiresRuntimeSupport", SourceSet.class, SourceSet.class);
+            addRequiresRuntimeSupport.invoke(javaModuleDependencies, sourceSetForModuleInfo, sourceSetForClasspath);
+        } catch (NoSuchMethodException e) {
+            //noinspection UnnecessaryReturnStatement
+            return;
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Deprecated
+    public static FileCollection addRequiresRuntimeSupportOld(Project project, JavaCompile task, SourceSet sourceSet) {
         Object javaModuleDependencies = project.getExtensions().findByName("javaModuleDependencies");
         if (javaModuleDependencies == null) {
             return project.getObjects().fileCollection();
         }
         try {
-            Method gav = javaModuleDependencies.getClass().getMethod("addRequiresRuntimeSupport", JavaCompile.class, SourceSet.class);
-            return (FileCollection) gav.invoke(javaModuleDependencies, task, sourceSet);
+            Method addRequiresRuntimeSupport = javaModuleDependencies.getClass().getMethod("addRequiresRuntimeSupport", JavaCompile.class, SourceSet.class);
+            return (FileCollection) addRequiresRuntimeSupport.invoke(javaModuleDependencies, task, sourceSet);
         } catch (NoSuchMethodException e) {
             return project.getObjects().fileCollection();
         } catch (ReflectiveOperationException e) {
