@@ -39,6 +39,14 @@ public interface WhiteboxJvmTestSuite {
     ListProperty<String> getRequires();
 
     /**
+     * Add a runtime-only dependency via Module Name when combined with
+     * 'java-module-dependencies' plugin.
+     *
+     * @return modifiable list of addition 'runtimeOnly' dependencies
+     */
+    ListProperty<String> getRequiresRuntime();
+
+    /**
      * Open all packages of this Whitebox Test Suite to a given Module
      * for reflection at runtime.
      * For example, 'opensTo.add("org.junit.platform.commons")'.

@@ -122,20 +122,21 @@ public abstract class JavaModuleTestingExtension {
         if (jvmTestSuite instanceof JvmTestSuite) {
             WhiteboxJvmTestSuite whiteboxJvmTestSuite = project.getObjects().newInstance(WhiteboxJvmTestSuite.class);
             whiteboxJvmTestSuite.getSourcesUnderTest().convention(project.getExtensions().getByType(SourceSetContainer.class).getByName(SourceSet.MAIN_SOURCE_SET_NAME));
-            whiteboxJvmTestSuite.getRequires().addAll(requiresFromModuleInfo((JvmTestSuite) jvmTestSuite, whiteboxJvmTestSuite.getSourcesUnderTest()));
+            whiteboxJvmTestSuite.getRequires().addAll(requiresFromModuleInfo((JvmTestSuite) jvmTestSuite, whiteboxJvmTestSuite.getSourcesUnderTest(), false));
+            whiteboxJvmTestSuite.getRequiresRuntime().addAll(requiresFromModuleInfo((JvmTestSuite) jvmTestSuite, whiteboxJvmTestSuite.getSourcesUnderTest(), true));
             conf.execute(whiteboxJvmTestSuite);
             configureJvmTestSuiteForWhitebox((JvmTestSuite) jvmTestSuite, whiteboxJvmTestSuite);
         }
     }
 
-    private Provider<List<String>> requiresFromModuleInfo(JvmTestSuite jvmTestSuite, Provider<SourceSet> sourcesUnderTest) {
+    private Provider<List<String>> requiresFromModuleInfo(JvmTestSuite jvmTestSuite, Provider<SourceSet> sourcesUnderTest, boolean runtimeOnly) {
         RegularFile moduleInfoFile = project.getLayout().getProjectDirectory().file(whiteboxModuleInfo(jvmTestSuite).getAbsolutePath());
         Provider<String> moduleInfoContent = project.getProviders().fileContents(moduleInfoFile).getAsText();
         return moduleInfoContent.map(c -> {
             ModuleInfoParser moduleInfoParser = new ModuleInfoParser(project.getLayout(), project.getProviders());
             String mainModuleName = moduleInfoParser.moduleName(sourcesUnderTest.get().getAllJava().getSrcDirs());
-            List<String> requires = ModuleInfoRequiresParser.parse(moduleInfoContent.get());
-            if (requires.stream().anyMatch(r -> r.equals(mainModuleName))) {
+            List<String> requires = ModuleInfoRequiresParser.parse(moduleInfoContent.get(), runtimeOnly);
+            if (requires.stream().anyMatch(r -> r.equals(mainModuleName)) || runtimeOnly) {
                 return requires.stream().filter(r -> !r.equals(mainModuleName)).collect(Collectors.toList());
             }
             return Collections.<String>emptyList();
@@ -232,6 +233,15 @@ public abstract class JavaModuleTestingExtension {
                 Provider<?> gav = JavaModuleDependenciesBridge.gav(project, requiresModuleName);
                 if (gav != null) {
                     dependencies.addProvider(implementation.getName(), gav);
+                }
+            }
+        });
+        Configuration runtimeOnly = configurations.getByName(testSources.getRuntimeOnlyConfigurationName());
+        runtimeOnly.withDependencies(d -> {
+            for (String requiresModuleName : whiteboxJvmTestSuite.getRequiresRuntime().get()) {
+                Provider<?> gav = JavaModuleDependenciesBridge.gav(project, requiresModuleName);
+                if (gav != null) {
+                    dependencies.addProvider(runtimeOnly.getName(), gav);
                 }
             }
         });
