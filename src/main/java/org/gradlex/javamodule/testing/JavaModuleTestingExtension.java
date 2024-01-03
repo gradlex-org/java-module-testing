@@ -63,12 +63,15 @@ public abstract class JavaModuleTestingExtension {
         testing.getSuites().withType(JvmTestSuite.class).configureEach(jvmTestSuite -> {
             boolean isTestModule = jvmTestSuite.getSources().getJava().getSrcDirs().stream().anyMatch(src -> new File(src, "module-info.java").exists());
             if ("test".equals(jvmTestSuite.getName())) {
-                jvmTestSuite.useJUnitJupiter(); // override old Gradle default to default to JUnit5 for all suites
+                jvmTestSuite.useJUnitJupiter(); // override old Gradle convention to default to JUnit5 for all suites
             }
             if (isTestModule) {
                 blackbox(jvmTestSuite);
             } else {
-                whitebox(jvmTestSuite, conf -> conf.getOpensTo().add("org.junit.platform.commons"));
+                boolean testFolderExists = jvmTestSuite.getSources().getJava().getSrcDirs().stream().anyMatch(File::exists);
+                if (testFolderExists) {
+                    whitebox(jvmTestSuite, conf -> conf.getOpensTo().add("org.junit.platform.commons"));
+                }
             }
         });
     }
