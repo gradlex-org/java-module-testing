@@ -29,26 +29,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentProvider {
     private final Set<File> mainSourceFolders;
     private final Set<File> testSourceFolders;
-    private final JavaCompile task;
-    private final FileCollection syntheticModuleInfoFolders;
-    private final JavaModuleDetector moduleDetector;
     private final ModuleInfoParser moduleInfoParser;
 
     private final ListProperty<String> allTestRequires;
 
     public WhiteboxTestCompileArgumentProvider(
-            Set<File> mainSourceFolders, Set<File> testSourceFolders, JavaCompile task, FileCollection syntheticModuleInfoFolders,
-            JavaModuleDetector moduleDetector, ModuleInfoParser moduleInfoParser, ObjectFactory objects) {
+            Set<File> mainSourceFolders, Set<File> testSourceFolders, ModuleInfoParser moduleInfoParser, ObjectFactory objects) {
         this.mainSourceFolders = mainSourceFolders;
         this.testSourceFolders = testSourceFolders;
-        this.task = task;
-        this.syntheticModuleInfoFolders = syntheticModuleInfoFolders;
-        this.moduleDetector = moduleDetector;
         this.moduleInfoParser = moduleInfoParser;
         this.allTestRequires = objects.listProperty(String.class);
     }
@@ -66,13 +58,7 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
         String moduleName = moduleInfoParser.moduleName(mainSourceFolders);
         String testSources = testSourceFolders.iterator().next().getPath();
 
-        String cpSeparator = System.getProperty("path.separator");
         List<String> args = new ArrayList<>();
-
-        // Since for Gradle this sources set does not look like a module, we have to define the module path ourselves
-        args.add("--module-path");
-        args.add(moduleDetector.inferModulePath(true, task.getClasspath().plus(syntheticModuleInfoFolders)).getFiles().stream()
-                .map(File::getPath).collect(Collectors.joining(cpSeparator)));
 
         for (String testRequires : allTestRequires.get()) {
             args.add("--add-modules");

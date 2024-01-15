@@ -31,7 +31,7 @@ class GradleBuild {
 
         settingsFile << '''
             pluginManagement {
-                plugins { id("org.gradlex.java-module-dependencies") version "1.3" }
+                plugins { id("org.gradlex.java-module-dependencies") version "1.5.2" }
             }
             dependencyResolutionManagement { repositories.mavenCentral() }
             includeBuild(".")
@@ -113,7 +113,7 @@ class GradleBuild {
                 .forwardOutput()
                 .withPluginClasspath()
                 .withProjectDir(projectDir)
-                .withArguments(Arrays.asList(args) + '-s')
+                .withArguments(Arrays.asList(args) + '-s' + '--configuration-cache')
                 .withDebug(ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp")).with {
             gradleVersionUnderTest ? it.withGradleVersion(gradleVersionUnderTest) : it
         }

@@ -57,22 +57,6 @@ public class JavaModuleDependenciesBridge {
         }
     }
 
-    @Deprecated
-    public static FileCollection addRequiresRuntimeSupportOld(Project project, JavaCompile task, SourceSet sourceSet) {
-        Object javaModuleDependencies = project.getExtensions().findByName("javaModuleDependencies");
-        if (javaModuleDependencies == null) {
-            return project.getObjects().fileCollection();
-        }
-        try {
-            Method addRequiresRuntimeSupport = javaModuleDependencies.getClass().getMethod("addRequiresRuntimeSupport", JavaCompile.class, SourceSet.class);
-            return (FileCollection) addRequiresRuntimeSupport.invoke(javaModuleDependencies, task, sourceSet);
-        } catch (NoSuchMethodException e) {
-            return project.getObjects().fileCollection();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static List<String> getRuntimeClasspathModules(Project project, SourceSet sourceSet) {
         return getClasspathModules("getRuntimeClasspathModules", project, sourceSet);
     }

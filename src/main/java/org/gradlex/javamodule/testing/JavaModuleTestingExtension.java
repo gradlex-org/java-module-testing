@@ -21,7 +21,6 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.jvm.JvmTestSuite;
 import org.gradle.api.provider.Provider;
@@ -31,12 +30,12 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.testing.Test;
-import org.gradle.internal.jvm.JavaModuleDetector;
 import org.gradle.jvm.tasks.Jar;
 import org.gradle.testing.base.TestSuite;
 import org.gradle.testing.base.TestingExtension;
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
 import org.gradlex.javamodule.testing.internal.ModuleInfoRequiresParser;
+import org.gradlex.javamodule.testing.internal.actions.JavaCompileSetModulePathAction;
 import org.gradlex.javamodule.testing.internal.bridges.JavaModuleDependenciesBridge;
 import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestCompileArgumentProvider;
 import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestRuntimeArgumentProvider;
@@ -52,12 +51,10 @@ public abstract class JavaModuleTestingExtension {
     private static final Action<WhiteboxJvmTestSuite> NO_OP_ACTION = c -> {};
 
     private final Project project;
-    private final JavaModuleDetector moduleDetector;
 
     @Inject
-    public JavaModuleTestingExtension(Project project, JavaModuleDetector moduleDetector) {
+    public JavaModuleTestingExtension(Project project) {
         this.project = project;
-        this.moduleDetector = moduleDetector;
 
         TestingExtension testing = project.getExtensions().getByType(TestingExtension.class);
         testing.getSuites().withType(JvmTestSuite.class).configureEach(jvmTestSuite -> {
@@ -184,19 +181,16 @@ public abstract class JavaModuleTestingExtension {
             SourceSet sourcesUnderTest = whiteboxJvmTestSuite.getSourcesUnderTest().get();
 
             compileJava.setClasspath(sourcesUnderTest.getOutput().plus(configurations.getByName(testSources.getCompileClasspathConfigurationName())));
-            FileCollection syntheticModuleInfoFolders = JavaModuleDependenciesBridge.addRequiresRuntimeSupportOld(project, compileJava, sourcesUnderTest);
 
             WhiteboxTestCompileArgumentProvider argumentProvider = (WhiteboxTestCompileArgumentProvider) compileJava.getOptions().getCompilerArgumentProviders().stream()
                     .filter(p -> p instanceof WhiteboxTestCompileArgumentProvider).findFirst().orElseGet(() -> {
                         WhiteboxTestCompileArgumentProvider newProvider = new WhiteboxTestCompileArgumentProvider(
                                 sourcesUnderTest.getJava().getSrcDirs(),
                                 testSources.getJava().getSrcDirs(),
-                                compileJava,
-                                syntheticModuleInfoFolders,
-                                moduleDetector,
                                 moduleInfoParser,
                                 project.getObjects());
                         compileJava.getOptions().getCompilerArgumentProviders().add(newProvider);
+                        compileJava.doFirst(project.getObjects().newInstance(JavaCompileSetModulePathAction.class));
                         return newProvider;
                     });
             argumentProvider.testRequires(JavaModuleDependenciesBridge.getCompileClasspathModules(project, testSources));
