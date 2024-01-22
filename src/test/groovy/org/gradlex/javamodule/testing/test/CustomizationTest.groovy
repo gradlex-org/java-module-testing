@@ -101,4 +101,20 @@ class CustomizationTest extends Specification {
         then:
         result.task(":app:test").outcome == TaskOutcome.SUCCESS
     }
+
+    def "build does not fail when JUnit has no version and the test folder is empty"() {
+        given:
+        appTestModuleInfoFile.parentFile.deleteDir()
+        appBuildFile << '''
+            testing.suites.withType<JvmTestSuite>().all {
+                useJUnitJupiter("") // <- no version, we want to manage that ourselves
+            }
+        '''
+
+        when:
+        def result = runTests()
+
+        then:
+        result.task(":app:test").outcome == TaskOutcome.NO_SOURCE
+    }
 }

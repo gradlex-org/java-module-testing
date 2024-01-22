@@ -62,13 +62,20 @@ public abstract class JavaModuleTestingExtension {
             if ("test".equals(jvmTestSuite.getName())) {
                 jvmTestSuite.useJUnitJupiter(); // override old Gradle convention to default to JUnit5 for all suites
             }
+
+            boolean testFolderExists = jvmTestSuite.getSources().getJava().getSrcDirs().stream().anyMatch(File::exists);
             if (isTestModule) {
                 blackbox(jvmTestSuite);
-            } else {
-                boolean testFolderExists = jvmTestSuite.getSources().getJava().getSrcDirs().stream().anyMatch(File::exists);
-                if (testFolderExists) {
-                    whitebox(jvmTestSuite, conf -> conf.getOpensTo().add("org.junit.platform.commons"));
-                }
+            } else if (testFolderExists) {
+                whitebox(jvmTestSuite, conf -> conf.getOpensTo().add("org.junit.platform.commons"));
+            }
+
+            // Remove the dependencies added by Gradle in case the test directory is missing. This allows the use of 'useJUnitJupiter("")' without hassle.
+            if (!testFolderExists) {
+                project.getConfigurations().getByName(jvmTestSuite.getSources().getImplementationConfigurationName(), implementation ->
+                        implementation.withDependencies(dependencySet -> dependencySet.removeIf(d -> "org.junit.jupiter".equals(d.getGroup()) && "junit-jupiter".equals(d.getName()))));
+                project.getConfigurations().getByName(jvmTestSuite.getSources().getRuntimeOnlyConfigurationName(), runtimeOnly ->
+                        runtimeOnly.withDependencies(dependencySet -> dependencySet.removeIf(d -> "org.junit.platform".equals(d.getGroup()) && "junit-platform-launcher".equals(d.getName()))));
             }
         });
     }
