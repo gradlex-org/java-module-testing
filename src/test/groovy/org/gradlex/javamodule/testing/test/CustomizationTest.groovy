@@ -75,4 +75,30 @@ class CustomizationTest extends Specification {
         then:
         result.task(":app:test").outcome == TaskOutcome.SUCCESS
     }
+
+    def "can use task lock service"() {
+        given:
+        appBuildFile.text = 'import org.gradlex.javamodule.testing.TaskLockService\n\n' + appBuildFile.text
+        appBuildFile << '''
+            javaModuleTesting.whitebox(testing.suites.getByName<JvmTestSuite>("test") {
+                targets.all {
+                    testTask {
+                        usesService(gradle.sharedServices.registerIfAbsent(TaskLockService.NAME, TaskLockService::class) { maxParallelUsages = 1 })
+                    }
+                }
+            }) {
+                requires.add("org.junit.jupiter.api")
+            }
+        '''
+        appModuleInfoFile << '''
+            module org.example.app {
+            }
+        '''
+
+        when:
+        def result = runTests()
+
+        then:
+        result.task(":app:test").outcome == TaskOutcome.SUCCESS
+    }
 }
