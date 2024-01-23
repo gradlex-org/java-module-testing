@@ -1,5 +1,10 @@
 # Java Module Testing Gradle Plugin - Changelog
 
+## Version 1.4
+* [#2](https://github.com/gradlex-org/java-module-testing/issues/2) New approach to split Module Path and Classpath for whitebox testing
+* [#40](https://github.com/gradlex-org/java-module-testing/issues/40) `useJUnitJupiter("")` without version does not fail for empty test directories
+* [#39](https://github.com/gradlex-org/java-module-testing/issues/39) Add `TaskLockService` for conveniently running test tasks in isolation
+
 ## Version 1.3.1
 * Improve interoperability with `java-module-dependencies` plugin
 
