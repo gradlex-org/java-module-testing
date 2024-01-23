@@ -63,19 +63,10 @@ public abstract class JavaModuleTestingExtension {
                 jvmTestSuite.useJUnitJupiter(); // override old Gradle convention to default to JUnit5 for all suites
             }
 
-            boolean testFolderExists = jvmTestSuite.getSources().getJava().getSrcDirs().stream().anyMatch(File::exists);
             if (isTestModule) {
                 blackbox(jvmTestSuite);
-            } else if (testFolderExists) {
+            } else {
                 whitebox(jvmTestSuite, conf -> conf.getOpensTo().add("org.junit.platform.commons"));
-            }
-
-            // Remove the dependencies added by Gradle in case the test directory is missing. This allows the use of 'useJUnitJupiter("")' without hassle.
-            if (!testFolderExists) {
-                project.getConfigurations().getByName(jvmTestSuite.getSources().getImplementationConfigurationName(), implementation ->
-                        implementation.withDependencies(dependencySet -> dependencySet.removeIf(d -> "org.junit.jupiter".equals(d.getGroup()) && "junit-jupiter".equals(d.getName()))));
-                project.getConfigurations().getByName(jvmTestSuite.getSources().getRuntimeOnlyConfigurationName(), runtimeOnly ->
-                        runtimeOnly.withDependencies(dependencySet -> dependencySet.removeIf(d -> "org.junit.platform".equals(d.getGroup()) && "junit-platform-launcher".equals(d.getName()))));
             }
         });
     }
@@ -124,6 +115,17 @@ public abstract class JavaModuleTestingExtension {
      */
     public void whitebox(TestSuite jvmTestSuite, Action<WhiteboxJvmTestSuite> conf) {
         if (jvmTestSuite instanceof JvmTestSuite) {
+            SourceSet suiteSourceSet = ((JvmTestSuite) jvmTestSuite).getSources();
+            boolean testFolderExists = suiteSourceSet.getJava().getSrcDirs().stream().anyMatch(File::exists);
+            if (!testFolderExists) {
+                // Remove the dependencies added by Gradle in case the test directory is missing. Then stop. This allows the use of 'useJUnitJupiter("")' without hassle.
+                project.getConfigurations().getByName(suiteSourceSet.getImplementationConfigurationName(), implementation ->
+                        implementation.withDependencies(dependencySet -> dependencySet.removeIf(d -> "org.junit.jupiter".equals(d.getGroup()) && "junit-jupiter".equals(d.getName()))));
+                project.getConfigurations().getByName(suiteSourceSet.getRuntimeOnlyConfigurationName(), runtimeOnly ->
+                        runtimeOnly.withDependencies(dependencySet -> dependencySet.removeIf(d -> "org.junit.platform".equals(d.getGroup()) && "junit-platform-launcher".equals(d.getName()))));
+                return;
+            }
+
             WhiteboxJvmTestSuite whiteboxJvmTestSuite = project.getObjects().newInstance(WhiteboxJvmTestSuite.class);
             whiteboxJvmTestSuite.getSourcesUnderTest().convention(project.getExtensions().getByType(SourceSetContainer.class).getByName(SourceSet.MAIN_SOURCE_SET_NAME));
             whiteboxJvmTestSuite.getRequires().addAll(requiresFromModuleInfo((JvmTestSuite) jvmTestSuite, whiteboxJvmTestSuite.getSourcesUnderTest(), false));

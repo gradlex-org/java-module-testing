@@ -117,4 +117,23 @@ class CustomizationTest extends Specification {
         then:
         result.task(":app:test").outcome == TaskOutcome.NO_SOURCE
     }
+
+    def "build does not fail when JUnit has no version, the test folder is empty and whitebox was manually configured"() {
+        given:
+        appTestModuleInfoFile.parentFile.deleteDir()
+        appBuildFile << '''
+            testing.suites.withType<JvmTestSuite>().all {
+                useJUnitJupiter("") // <- no version, we want to manage that ourselves
+            }
+            javaModuleTesting.whitebox(testing.suites["test"]) {
+                requires.add("org.junit.jupiter.api")
+            }
+        '''
+
+        when:
+        def result = runTests()
+
+        then:
+        result.task(":app:test").outcome == TaskOutcome.NO_SOURCE
+    }
 }
