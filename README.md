@@ -125,14 +125,14 @@ Changes for test runtime (`:test`):
 ## Whitebox Test
 
 Changes for test compilation (`:compileTestJava`):
-- Normally, Gradle would not use the Module Path, as there is no `moudle-info.java` in the source set
+- Normally, Gradle would not use the Module Path, as there is no `module-info.java` in the source set
 - Now, a Module Path is computed for the compilation. 
   Using `--patch-module`, the test classes are compiled as an addition to the main module.
 
 Changes for test runtime (`:test`):
-- Normally, Gradle would not run its test runner as Module, as there is no `moudle-info.class` as part of the compiled tests.
+- Normally, Gradle would not run its test runner as Module, as there is no `module-info.class` as part of the compiled tests.
 - Now, the main and test classes are both used as locations for test discovery.
-  By this, Gradle will find the `moudle-info.class` of the main module for the tests.
+  By this, Gradle will find the `module-info.class` of the main module for the tests.
   Using `--patch-module`, _main classes_, _main resources_, _test classes_, and _test resources_ folders are all merged to be treated as one module during test runtime.
 
 # Disclaimer
