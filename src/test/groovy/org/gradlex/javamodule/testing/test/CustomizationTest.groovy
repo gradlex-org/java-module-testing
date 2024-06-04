@@ -84,7 +84,7 @@ class CustomizationTest extends Specification {
             javaModuleTesting.whitebox(testing.suites.getByName<JvmTestSuite>("test") {
                 targets.all {
                     testTask {
-                        usesService(gradle.sharedServices.registerIfAbsent(TaskLockService.NAME, TaskLockService::class) { maxParallelUsages = 1 })
+                        usesService(gradle.sharedServices.registerIfAbsent(TaskLockService.NAME, TaskLockService::class) { maxParallelUsages.set(1) })
                     }
                 }
             }) {

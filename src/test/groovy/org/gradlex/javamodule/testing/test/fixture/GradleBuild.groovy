@@ -30,6 +30,9 @@ class GradleBuild {
         this.libBuildFile = file("lib/build.gradle.kts")
         this.libModuleInfoFile = file("lib/src/main/java/module-info.java")
 
+        def launcherDependency = gradleVersionUnderTest == '7.4' ?
+                'testRuntimeOnly("org.junit.platform:junit-platform-launcher")' : ''
+
         settingsFile << '''
             pluginManagement {
                 plugins { id("org.gradlex.java-module-dependencies") version "1.5.2" }
@@ -39,7 +42,7 @@ class GradleBuild {
             rootProject.name = "test-project"
             include("app", "lib")
         '''
-        appBuildFile << '''
+        appBuildFile << """
             plugins {
                 id("org.gradlex.java-module-testing")
                 id("application")
@@ -47,12 +50,13 @@ class GradleBuild {
             group = "org.example"
             dependencies {
                 testImplementation(platform("org.junit:junit-bom:5.9.0"))
+                $launcherDependency 
             }
             application {
                 mainModule.set("org.example.app")
                 mainClass.set("org.example.app.Main")
             }
-        '''
+        """
         file("app/src/main/java/org/example/app/Main.java") << '''
             package org.example.app;
             
