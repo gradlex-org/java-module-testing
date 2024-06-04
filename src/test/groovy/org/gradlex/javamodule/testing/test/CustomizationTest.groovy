@@ -56,6 +56,7 @@ class CustomizationTest extends Specification {
         appBuildFile << '''
             javaModuleTesting.blackbox(testing.suites["test"])
             javaModuleTesting.blackbox(testing.suites["test"])
+            dependencies { testImplementation(project(path)) }
         '''
         appModuleInfoFile << '''
             module org.example.app {

@@ -18,6 +18,7 @@ class GradleBuild {
     final File libModuleInfoFile
 
     final String gradleVersionUnderTest = System.getProperty("gradleVersionUnderTest")
+    boolean canUseProjectIsolation = gradleVersionUnderTest == null
 
     GradleBuild(File projectDir = Files.createTempDirectory("gradle-build").toFile()) {
         this.projectDir = projectDir
@@ -40,7 +41,6 @@ class GradleBuild {
         '''
         appBuildFile << '''
             plugins {
-                id("org.gradlex.java-module-dependencies")
                 id("org.gradlex.java-module-testing")
                 id("application")
             }
@@ -78,12 +78,17 @@ class GradleBuild {
 
         libBuildFile << '''
             plugins {
-                id("org.gradlex.java-module-dependencies")
                 id("org.gradlex.java-module-testing")
                 id("java-library")
             }
             group = "org.example"
         '''
+    }
+
+    void useJavaModuleDependenciesPlugin() {
+        canUseProjectIsolation = false // 'java-module-dependencies' not yet fully compatible
+        appBuildFile.text = appBuildFile.text.replace('plugins {', 'plugins { id("org.gradlex.java-module-dependencies")')
+        libBuildFile.text = libBuildFile.text.replace('plugins {', 'plugins { id("org.gradlex.java-module-dependencies")')
     }
 
     File file(String path) {
@@ -109,11 +114,15 @@ class GradleBuild {
     }
 
     GradleRunner runner(String... args) {
+        List<String> latestFeaturesArgs = canUseProjectIsolation ? [
+                '--configuration-cache',
+                '-Dorg.gradle.unsafe.isolated-projects=true'
+        ] : []
         GradleRunner.create()
                 .forwardOutput()
                 .withPluginClasspath()
                 .withProjectDir(projectDir)
-                .withArguments(Arrays.asList(args) + '-s' + '--configuration-cache')
+                .withArguments(Arrays.asList(args) + latestFeaturesArgs + '-s' + '--configuration-cache')
                 .withDebug(ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp")).with {
             gradleVersionUnderTest ? it.withGradleVersion(gradleVersionUnderTest) : it
         }

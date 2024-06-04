@@ -9,6 +9,10 @@ class JavaModuleDependenciesBridgeTest extends Specification {
     @Delegate
     GradleBuild build = new GradleBuild()
 
+    def setup() {
+        useJavaModuleDependenciesPlugin()
+    }
+
     def "respects moduleNameToGA mappings"() {
         given:
         appBuildFile << '''
