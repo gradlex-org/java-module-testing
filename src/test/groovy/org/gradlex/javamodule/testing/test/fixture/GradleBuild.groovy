@@ -124,7 +124,6 @@ class GradleBuild {
 
     GradleRunner runner(String... args) {
         List<String> latestFeaturesArgs = canUseProjectIsolation ? [
-                '--configuration-cache',
                 '-Dorg.gradle.unsafe.isolated-projects=true'
         ] : []
         GradleRunner.create()
