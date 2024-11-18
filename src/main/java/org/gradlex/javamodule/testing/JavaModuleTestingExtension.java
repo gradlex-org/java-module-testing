@@ -208,6 +208,9 @@ public abstract class JavaModuleTestingExtension {
         tasks.named(testSources.getCompileJavaTaskName(), JavaCompile.class, compileJava -> {
             SourceSet sourcesUnderTest = whiteboxJvmTestSuite.getSourcesUnderTest().get();
 
+            configurations.getByName(testSources.getCompileOnlyConfigurationName()).extendsFrom(
+                    configurations.getByName(sourcesUnderTest.getCompileOnlyConfigurationName()));
+
             compileJava.setClasspath(sourcesUnderTest.getOutput().plus(configurations.getByName(testSources.getCompileClasspathConfigurationName())));
 
             WhiteboxTestCompileArgumentProvider argumentProvider = (WhiteboxTestCompileArgumentProvider) compileJava.getOptions().getCompilerArgumentProviders().stream()

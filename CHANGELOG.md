@@ -2,6 +2,7 @@
 
 ## Version 1.5
 * [#47](https://github.com/gradlex-org/java-module-testing/issues/47) Add support for Classpath Test Suites
+* [#51](https://github.com/gradlex-org/java-module-testing/issues/51) testCompileOnly extends compileOnly for Whitebox Test Suites
 
 ## Version 1.4
 * [#2](https://github.com/gradlex-org/java-module-testing/issues/2) New approach to split Module Path and Classpath for whitebox testing
