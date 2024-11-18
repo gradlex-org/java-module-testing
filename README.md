@@ -103,13 +103,25 @@ src
               |   requires org.example.app; // 'main' module into which the tests are patched
               |   requires org.junit.jupiter.api;
               | }
-}
 ```
 
 A whitebox _test source set_ does **not** have a `module-info.java`.
 Instead, the _main_ and _test_ classes will be patched together and the test will run in the _main_ module which now includes the test classes as well.
 Additional `requires` for the test are defined as shown above.
 If the _sources under test_ are located in a different source set (not `main`), this can be configured via `sourcesUnderTest.set("source-set-name")`.
+
+## Classpath Test Suites
+
+An alternative variant of "whitebox" testing is to run testing on the classpath and ignore **all** module information.
+This is what [Gradle does without this plugin](https://docs.gradle.org/current/userguide/java_testing.html#whitebox_unit_test_execution_on_the_classpath).
+By default, this plugin replaces this with the [Whitebox Test Suite setup](#whitebox-test-suites), which should be the preferred testing approach.
+If you still need to use the classpath-based setup for a Test Suite, you may configure it as follows: 
+
+```
+javaModuleTesting.classpath(testing.suites["test"])
+```
+
+A reason to do testing like this is if you need to utilise testing libraries (e.g. for mocking) that do not work with the Module System at all.
 
 # What does the plugin do?
 

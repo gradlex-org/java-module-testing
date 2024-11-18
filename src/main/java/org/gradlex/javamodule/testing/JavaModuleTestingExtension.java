@@ -17,6 +17,7 @@
 package org.gradlex.javamodule.testing;
 
 import org.gradle.api.Action;
+import org.gradle.api.Describable;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
@@ -96,6 +97,24 @@ public abstract class JavaModuleTestingExtension {
     @SuppressWarnings("unused")
     public void whitebox(TestSuite jvmTestSuite) {
         whitebox(jvmTestSuite, NO_OP_ACTION);
+    }
+
+    /**
+     * Turn the given JVM Test Suite into a Classpath Test Suite.
+     * For example:
+     * <p>
+     * javaModuleTesting.classpath(testing.suites["test"])
+     * <p>
+     * This restores the default behavior of Gradle to run tests on the Classpath if
+     * no 'module-info.java' is present in the source folder of the given test suite.
+     *
+     * @param jvmTestSuite the JVM Test Suite to configure
+     */
+    @SuppressWarnings("unused")
+    public void classpath(TestSuite jvmTestSuite) {
+        if (jvmTestSuite instanceof JvmTestSuite) {
+            revertJvmTestSuiteForWhitebox((JvmTestSuite) jvmTestSuite);
+        }
     }
 
     /**
@@ -247,6 +266,27 @@ public abstract class JavaModuleTestingExtension {
                     dependencies.addProvider(runtimeOnly.getName(), gav);
                 }
             }
+        });
+    }
+
+    /**
+     * Resets changes performed in 'configureJvmTestSuiteForWhitebox' to Gradle defaults.
+     */
+    private void revertJvmTestSuiteForWhitebox(JvmTestSuite jvmTestSuite) {
+        TaskContainer tasks = project.getTasks();
+        SourceSet testSources = jvmTestSuite.getSources();
+
+        tasks.named(testSources.getCompileJavaTaskName(), JavaCompile.class, compileJava -> {
+            compileJava.setClasspath(testSources.getCompileClasspath());
+            compileJava.getOptions().getCompilerArgumentProviders().removeIf(p -> p instanceof WhiteboxTestCompileArgumentProvider);
+            compileJava.getActions().removeIf(a -> a instanceof Describable
+                    && JavaCompileSetModulePathAction.class.getName().equals(((Describable) a).getDisplayName()));
+        });
+
+        tasks.named(testSources.getName(), Test.class, test -> {
+            test.setClasspath(testSources.getRuntimeClasspath());
+            test.setTestClassesDirs(testSources.getOutput().getClassesDirs());
+            test.getJvmArgumentProviders().removeIf(p -> p instanceof WhiteboxTestRuntimeArgumentProvider);
         });
     }
 }

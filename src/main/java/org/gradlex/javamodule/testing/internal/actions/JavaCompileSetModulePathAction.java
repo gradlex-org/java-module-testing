@@ -17,6 +17,7 @@
 package org.gradlex.javamodule.testing.internal.actions;
 
 import org.gradle.api.Action;
+import org.gradle.api.Describable;
 import org.gradle.api.NonNullApi;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
@@ -28,10 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NonNullApi
-public abstract class JavaCompileSetModulePathAction implements Action<Task> {
+public abstract class JavaCompileSetModulePathAction implements Action<Task>, Describable {
 
     @Inject
     protected abstract JavaModuleDetector getJavaModuleDetector();
+
+    @Override
+    public String getDisplayName() {
+        return JavaCompileSetModulePathAction.class.getName();
+    }
 
     @Override
     public void execute(Task task) {
