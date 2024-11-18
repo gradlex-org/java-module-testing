@@ -250,6 +250,7 @@ public abstract class JavaModuleTestingExtension {
             argumentProvider.testRequires(JavaModuleDependenciesBridge.getRuntimeClasspathModules(project, testSources));
             argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires());
             argumentProvider.testOpensTo(whiteboxJvmTestSuite.getOpensTo());
+            argumentProvider.testExportsTo(whiteboxJvmTestSuite.getExportsTo());
         });
 
         Configuration implementation = configurations.getByName(testSources.getImplementationConfigurationName());

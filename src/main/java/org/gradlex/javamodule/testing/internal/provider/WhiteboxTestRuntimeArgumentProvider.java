@@ -38,6 +38,7 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
 
     private final ListProperty<String> allTestRequires;
     private final ListProperty<String> allTestOpensTo;
+    private final ListProperty<String> allTestExportsTo;
 
     public WhiteboxTestRuntimeArgumentProvider(Set<File> mainSourceFolders,
                                                Provider<Directory> testClassesFolders, File resourcesUnderTest, File testResources,
@@ -50,6 +51,7 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
         this.moduleInfoParser = moduleInfoParser;
         this.allTestRequires = objects.listProperty(String.class);
         this.allTestOpensTo = objects.listProperty(String.class);
+        this.allTestExportsTo = objects.listProperty(String.class);
     }
 
     public void testRequires(Provider<List<String>> testRequires) {
@@ -60,12 +62,12 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
         allTestRequires.addAll(testRequires);
     }
 
-    public void testOpensTo(Provider<List<String>> testRequires) {
-        allTestOpensTo.addAll(testRequires);
+    public void testOpensTo(Provider<List<String>> testOpensTo) {
+        allTestOpensTo.addAll(testOpensTo);
     }
 
-    public void testOpensTo(List<String> testRequires) {
-        allTestOpensTo.addAll(testRequires);
+    public void testExportsTo(Provider<List<String>> testExportsTo) {
+        allTestExportsTo.addAll(testExportsTo);
     }
 
     @Override
@@ -92,6 +94,13 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
         for (String packageName : allTestClassPackages) {
             for (String opensTo : allTestOpensTo.get()) {
                 args.add("--add-opens");
+                args.add(moduleName + "/" + packageName + "=" + opensTo);
+            }
+        }
+
+        for (String packageName : allTestClassPackages) {
+            for (String opensTo : allTestExportsTo.get()) {
+                args.add("--add-exports");
                 args.add(moduleName + "/" + packageName + "=" + opensTo);
             }
         }

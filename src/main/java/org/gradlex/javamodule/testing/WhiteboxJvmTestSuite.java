@@ -54,4 +54,12 @@ public interface WhiteboxJvmTestSuite {
      * @return modifiable list of addition '--add-opens'
      */
     ListProperty<String> getOpensTo();
+
+    /**
+     * Export all packages of this Whitebox Test Suite to a given Module
+     * for access to public methods at runtime.
+     *
+     * @return modifiable list of addition '--add-exports'
+     */
+    ListProperty<String> getExportsTo();
 }

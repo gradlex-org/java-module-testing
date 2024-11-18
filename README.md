@@ -80,6 +80,7 @@ Whitebox Test Suites might require additional configuration, which can be done l
 javaModuleTesting.whitebox(testing.suites["test"]) {
     requires.add("org.junit.jupiter.api")
     // opensTo.add("org.junit.platform.commons") <-- opensTo 'org.junit.platform.commons' is done by default
+    // exportsTo.add("...")
 }
 ```
 

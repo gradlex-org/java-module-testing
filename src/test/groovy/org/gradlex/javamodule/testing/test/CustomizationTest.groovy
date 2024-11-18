@@ -53,6 +53,34 @@ class CustomizationTest extends Specification {
         result.task(":app:test").outcome == TaskOutcome.SUCCESS
     }
 
+    def "can customize whitebox test suites with exportsTo"() {
+        given:
+        def mainTest = file("app/src/test/java/org/example/app/test/MainTest.java")
+        // make test public, so that 'exportsTo org.junit.platform.commons' is sufficient
+        mainTest.text = mainTest.text.replace('void testApp()' , 'public void testApp()')
+
+        appBuildFile << '''
+            javaModuleTesting.classpath(testing.suites["test"]) // reset default setup
+            javaModuleTesting.whitebox(testing.suites["test"]) {
+                requires.add("org.junit.jupiter.api")
+                exportsTo.add("org.junit.platform.commons")
+            }
+        '''
+        appModuleInfoFile << '''
+            module org.example.app {
+            }
+        '''
+
+        when:
+        def result = runTests()
+
+        then:
+        result.output.contains('Main Module: org.example.app')
+        result.output.contains('Test Module: org.example.app')
+        result.task(":app:test").outcome == TaskOutcome.SUCCESS
+    }
+
+
     def "repetitive blackbox calls on the same test suite have no effect"() {
         given:
         appBuildFile << '''
