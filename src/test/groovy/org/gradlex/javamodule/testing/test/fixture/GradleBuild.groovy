@@ -35,7 +35,7 @@ class GradleBuild {
 
         settingsFile << '''
             pluginManagement {
-                plugins { id("org.gradlex.java-module-dependencies") version "1.5.2" }
+                plugins { id("org.gradlex.java-module-dependencies") version "1.8" }
             }
             dependencyResolutionManagement { repositories.mavenCentral() }
             includeBuild(".")
@@ -55,6 +55,9 @@ class GradleBuild {
             application {
                 mainModule.set("org.example.app")
                 mainClass.set("org.example.app.Main")
+            }
+            tasks.test {
+                testLogging.showStandardStreams = true
             }
         """
         file("app/src/main/java/org/example/app/Main.java") << '''
@@ -76,6 +79,8 @@ class GradleBuild {
                 @Test
                 void testApp() {
                     new Main();
+                    System.out.println("Main Module: " + Main.class.getModule().getName());
+                    System.out.println("Test Module: " + MainTest.class.getModule().getName());
                 }
             }
         '''
@@ -110,7 +115,7 @@ class GradleBuild {
     }
 
     BuildResult runTests() {
-        runner(':app:test', '-q').build()
+        runner(':app:test').build()
     }
 
     BuildResult fail() {

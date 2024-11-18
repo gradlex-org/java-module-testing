@@ -28,6 +28,8 @@ class CustomizationTest extends Specification {
         def result = runTests()
 
         then:
+        result.output.contains('Main Module: org.example.app')
+        result.output.contains('Test Module: org.example.app')
         result.task(":app:test").outcome == TaskOutcome.SUCCESS
     }
 
@@ -74,6 +76,8 @@ class CustomizationTest extends Specification {
         def result = runTests()
 
         then:
+        result.output.contains('Main Module: org.example.app')
+        result.output.contains('Test Module: org.example.app.test')
         result.task(":app:test").outcome == TaskOutcome.SUCCESS
     }
 
