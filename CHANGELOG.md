@@ -1,5 +1,8 @@
 # Java Module Testing Gradle Plugin - Changelog
 
+## Version 1.6
+* [#85](https://github.com/gradlex-org/java-module-testing/issues/85) Further improve interoperability with `java-module-dependencies` plugin
+
 ## Version 1.5
 * [#47](https://github.com/gradlex-org/java-module-testing/issues/47) Add support for Classpath Test Suites
 * [#51](https://github.com/gradlex-org/java-module-testing/issues/51) testCompileOnly extends compileOnly for Whitebox Test Suites
