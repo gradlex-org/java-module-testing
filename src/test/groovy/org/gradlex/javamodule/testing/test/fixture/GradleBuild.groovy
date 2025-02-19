@@ -100,6 +100,11 @@ class GradleBuild {
         libBuildFile.text = libBuildFile.text.replace('plugins {', 'plugins { id("org.gradlex.java-module-dependencies")')
     }
 
+    def useTestFixturesPlugin() {
+        appBuildFile.text = appBuildFile.text.replace('plugins {', 'plugins { id("java-test-fixtures");')
+        libBuildFile.text = libBuildFile.text.replace('plugins {', 'plugins { id("java-test-fixtures");')
+    }
+
     File file(String path) {
         new File(projectDir, path).tap {
             it.getParentFile().mkdirs()

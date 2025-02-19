@@ -104,4 +104,32 @@ class JavaModuleDependenciesBridgeTest extends Specification {
         then:
         result.task(":app:compileTestJava").outcome == TaskOutcome.SUCCESS
     }
+
+    def "can be combined with test-fixtures plugins"() {
+        given:
+        useTestFixturesPlugin()
+        appModuleInfoFile << '''
+            module org.example.app { 
+            }
+        '''
+        file("app/src/testFixtures/java/module-info.java") << '''
+            open module org.example.app.test.fixtures {
+                requires org.example.app;
+            }
+        '''
+        appBuildFile << '''
+            javaModuleTesting.whitebox(testing.suites["test"]) {
+                requires.add("org.junit.jupiter.api")
+                requires.add("org.example.app.test.fixtures")
+            }
+            javaModuleDependencies {
+            }
+        '''
+
+        when:
+        def result = runTests()
+
+        then:
+        result.task(":app:test").outcome == TaskOutcome.SUCCESS
+    }
 }

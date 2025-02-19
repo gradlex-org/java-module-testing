@@ -17,10 +17,8 @@
 package org.gradlex.javamodule.testing.internal.bridges;
 
 import org.gradle.api.Project;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
-import org.gradle.api.tasks.compile.JavaCompile;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -28,14 +26,14 @@ import java.util.List;
 
 public class JavaModuleDependenciesBridge {
 
-    public static Provider<?> gav(Project project, String moduleName) {
+    public static Provider<?> create(Project project, String moduleName, SourceSet sourceSetWithModuleInfo)   {
         Object javaModuleDependencies = project.getExtensions().findByName("javaModuleDependencies");
         if (javaModuleDependencies == null) {
             return null;
         }
         try {
-            Method gav = javaModuleDependencies.getClass().getMethod("gav", String.class);
-            return (Provider<?>) gav.invoke(javaModuleDependencies, moduleName);
+            Method gav = javaModuleDependencies.getClass().getMethod("create", String.class, SourceSet.class);
+            return (Provider<?>) gav.invoke(javaModuleDependencies, moduleName, sourceSetWithModuleInfo);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

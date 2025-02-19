@@ -256,18 +256,18 @@ public abstract class JavaModuleTestingExtension {
         Configuration implementation = configurations.getByName(testSources.getImplementationConfigurationName());
         implementation.withDependencies(d -> {
             for (String requiresModuleName : whiteboxJvmTestSuite.getRequires().get()) {
-                Provider<?> gav = JavaModuleDependenciesBridge.gav(project, requiresModuleName);
-                if (gav != null) {
-                    dependencies.addProvider(implementation.getName(), gav);
+                Provider<?> dependency = JavaModuleDependenciesBridge.create(project, requiresModuleName, whiteboxJvmTestSuite.getSourcesUnderTest().get());
+                if (dependency != null) {
+                    dependencies.addProvider(implementation.getName(), dependency);
                 }
             }
         });
         Configuration runtimeOnly = configurations.getByName(testSources.getRuntimeOnlyConfigurationName());
         runtimeOnly.withDependencies(d -> {
             for (String requiresModuleName : whiteboxJvmTestSuite.getRequiresRuntime().get()) {
-                Provider<?> gav = JavaModuleDependenciesBridge.gav(project, requiresModuleName);
-                if (gav != null) {
-                    dependencies.addProvider(runtimeOnly.getName(), gav);
+                Provider<?> dependency = JavaModuleDependenciesBridge.create(project, requiresModuleName, whiteboxJvmTestSuite.getSourcesUnderTest().get());
+                if (dependency != null) {
+                    dependencies.addProvider(runtimeOnly.getName(), dependency);
                 }
             }
         });

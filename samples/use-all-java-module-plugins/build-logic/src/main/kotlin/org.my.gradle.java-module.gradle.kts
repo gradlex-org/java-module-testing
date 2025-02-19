@@ -17,7 +17,6 @@ javaModuleTesting.whitebox(
 
 testing.suites.create<JvmTestSuite>("integtest") {
     useJUnitJupiter("")
-    testType.set("blackbox")
     dependencies {
         implementation(project.dependencies.platform(project(":platform")))
     }
