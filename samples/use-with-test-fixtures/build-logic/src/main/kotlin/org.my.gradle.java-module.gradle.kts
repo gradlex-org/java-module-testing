@@ -2,12 +2,12 @@ plugins {
     id("java")
     id("java-test-fixtures")
     id("org.my.gradle.base")
+    id("org.gradlex.java-module-dependencies")
     id("org.gradlex.java-module-testing")
 }
 
 javaModuleTesting.whitebox(
     testing.suites.getByName<JvmTestSuite>("test") {
-        useJUnitJupiter()
         targets.all { testTask { testLogging.showStandardStreams = true } }
     }
 ) {
@@ -16,8 +16,6 @@ javaModuleTesting.whitebox(
 }
 
 testing.suites.create<JvmTestSuite>("integtest") {
-    useJUnitJupiter()
-    testType.set(TestSuiteType.INTEGRATION_TEST)
     targets.all { testTask { testLogging.showStandardStreams = true } }
     tasks.check { dependsOn(targets) }
 }
