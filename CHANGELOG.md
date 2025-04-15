@@ -1,5 +1,10 @@
 # Java Module Testing Gradle Plugin - Changelog
 
+## Version 1.6.1
+* Use all test src folders in compilation (if there are more than one)
+* Only add class folders that exist to the '--patch-module' argument
+* Only perform 'extendsFrom(compileOnly)' if not already done
+
 ## Version 1.6
 * [#85](https://github.com/gradlex-org/java-module-testing/issues/85) Further improve interoperability with `java-module-dependencies` plugin
 
