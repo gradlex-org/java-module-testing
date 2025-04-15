@@ -105,13 +105,22 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
             }
         }
 
+        String testClassesPath = testClassesFolders.get().getAsFile().getPath();
+        String resourcesUnderTestPath = toAppendablePathEntry(resourcesUnderTest);
+        String testResourcesPath = toAppendablePathEntry(testResources);
+
         // Patch into Module located in the 'main' classes folder: test classes, resources, test resources
         args.add("--patch-module");
-        args.add(moduleName + "=" +
-                testClassesFolders.get().getAsFile().getPath() + File.pathSeparator +
-                resourcesUnderTest.getPath() + File.pathSeparator +
-                testResources.getPath());
+        args.add(moduleName + "=" + testClassesPath + resourcesUnderTestPath + testResourcesPath);
 
         return args;
+    }
+
+    private String toAppendablePathEntry(File folder) {
+        if (folder.exists()) {
+            return File.pathSeparator + folder.getPath();
+        } else {
+            return "";
+        }
     }
 }
