@@ -29,6 +29,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentProvider {
     private final Set<File> mainSourceFolders;
@@ -56,7 +57,8 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
     @Override
     public Iterable<String> asArguments() {
         String moduleName = moduleInfoParser.moduleName(mainSourceFolders);
-        String testSources = testSourceFolders.iterator().next().getPath();
+        String testSources = testSourceFolders.stream().map(File::getPath)
+                .collect(Collectors.joining(File.pathSeparator));
 
         List<String> args = new ArrayList<>();
 
