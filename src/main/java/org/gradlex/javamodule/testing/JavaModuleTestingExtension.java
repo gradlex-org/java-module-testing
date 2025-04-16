@@ -252,7 +252,9 @@ public abstract class JavaModuleTestingExtension {
                     });
             argumentProvider.testRequires(JavaModuleDependenciesBridge.getRuntimeClasspathModules(project, testSources));
             argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires());
+            argumentProvider.testOpensTo(JavaModuleDependenciesBridge.getOpensToModules(project, testSources));
             argumentProvider.testOpensTo(whiteboxJvmTestSuite.getOpensTo());
+            argumentProvider.testExportsTo(JavaModuleDependenciesBridge.getExportsToModules(project, testSources));
             argumentProvider.testExportsTo(whiteboxJvmTestSuite.getExportsTo());
         });
 
