@@ -56,14 +56,22 @@ public class JavaModuleDependenciesBridge {
     }
 
     public static List<String> getRuntimeClasspathModules(Project project, SourceSet sourceSet) {
-        return getClasspathModules("getRuntimeClasspathModules", project, sourceSet);
+        return getDeclaredModules("getRuntimeClasspathModules", project, sourceSet);
     }
 
     public static List<String> getCompileClasspathModules(Project project, SourceSet sourceSet) {
-        return getClasspathModules("getCompileClasspathModules", project, sourceSet);
+        return getDeclaredModules("getCompileClasspathModules", project, sourceSet);
     }
 
-    public static List<String> getClasspathModules(String getter, Project project, SourceSet sourceSet) {
+    public static List<String> getExportsToModules(Project project, SourceSet sourceSet) {
+        return getDeclaredModules("getExportsToModules", project, sourceSet);
+    }
+
+    public static List<String> getOpensToModules(Project project, SourceSet sourceSet) {
+        return getDeclaredModules("getOpensToModules", project, sourceSet);
+    }
+
+    private static List<String> getDeclaredModules(String getter, Project project, SourceSet sourceSet) {
         Object moduleInfoDslExtension = project.getExtensions().findByName(sourceSet.getName() + "ModuleInfo");
         if (moduleInfoDslExtension == null) {
             return Collections.emptyList();

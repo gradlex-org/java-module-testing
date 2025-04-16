@@ -66,7 +66,15 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
         allTestOpensTo.addAll(testOpensTo);
     }
 
+    public void testOpensTo(List<String> testOpensTo) {
+        allTestOpensTo.addAll(testOpensTo);
+    }
+
     public void testExportsTo(Provider<List<String>> testExportsTo) {
+        allTestExportsTo.addAll(testExportsTo);
+    }
+
+    public void testExportsTo(List<String> testExportsTo) {
         allTestExportsTo.addAll(testExportsTo);
     }
 
