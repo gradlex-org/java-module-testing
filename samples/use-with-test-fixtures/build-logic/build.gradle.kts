@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation("org.gradlex:java-module-testing:1.6.1")
+    implementation("org.gradlex:java-module-testing:1.7")
     implementation("org.gradlex:java-module-dependencies:1.8.1")
 }

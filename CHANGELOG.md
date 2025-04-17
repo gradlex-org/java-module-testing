@@ -1,5 +1,8 @@
 # Java Module Testing Gradle Plugin - Changelog
 
+## Version 1.7
+* [#100](https://github.com/gradlex-org/java-module-testing/issues/100) Use `exportsTo` and `opensTo` statements from Module Info DSL
+
 ## Version 1.6.1
 * Use all test src folders in compilation (if there are more than one)
 * Only add class folders that exist to the '--patch-module' argument
