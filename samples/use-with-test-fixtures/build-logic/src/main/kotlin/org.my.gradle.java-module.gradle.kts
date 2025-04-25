@@ -21,5 +21,5 @@ testing.suites.create<JvmTestSuite>("integtest") {
 }
 
 dependencies {
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.18.3"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.19.0"))
 }
