@@ -4,15 +4,11 @@ plugins {
     id("org.gradlex.java-module-testing")
 }
 
-javaModuleTesting.whitebox(
-    testing.suites.getByName<JvmTestSuite>("test") {
-        useJUnitJupiter("")
-        targets.all {
-            testTask { jvmArgs("-Dorg.slf4j.simpleLogger.defaultLogLevel=error") }
-        }
+testing.suites.getByName<JvmTestSuite>("test") {
+    useJUnitJupiter("")
+    targets.all {
+        testTask { jvmArgs("-Dorg.slf4j.simpleLogger.defaultLogLevel=error") }
     }
-) {
-    requires.add("org.junit.jupiter.api")
 }
 
 testing.suites.create<JvmTestSuite>("integtest") {

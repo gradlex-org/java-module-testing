@@ -18,3 +18,7 @@ dependencies {
 
     runtimeOnly("org.slf4j:slf4j-simple")
 }
+
+javaModuleTesting.whitebox(testing.suites["test"]) {
+    requires.add("org.junit.jupiter.api")
+}
