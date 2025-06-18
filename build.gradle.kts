@@ -6,10 +6,8 @@ plugins {
 group = "org.gradlex"
 version = "1.7"
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
+tasks.withType<JavaCompile>().configureEach { options.release = 8 }
+tasks.withType<GroovyCompile>().configureEach { options.release = 8 }
 
 dependencies {
     testImplementation("org.spockframework:spock-core:2.1-groovy-3.0")

@@ -59,6 +59,7 @@ class GradleBuild {
             tasks.test {
                 testLogging.showStandardStreams = true
             }
+            tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
         """
         file("app/src/main/java/org/example/app/Main.java") << '''
             package org.example.app;
@@ -91,6 +92,7 @@ class GradleBuild {
                 id("java-library")
             }
             group = "org.example"
+            tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
         '''
     }
 
