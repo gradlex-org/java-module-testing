@@ -18,17 +18,17 @@ package org.gradlex.javamodule.testing.internal.actions;
 
 import org.gradle.api.Action;
 import org.gradle.api.Describable;
-import org.gradle.api.NonNullApi;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.internal.jvm.JavaModuleDetector;
+import org.jspecify.annotations.NullMarked;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-@NonNullApi
+@NullMarked
 public abstract class JavaCompileSetModulePathAction implements Action<Task>, Describable {
 
     @Inject

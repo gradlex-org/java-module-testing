@@ -16,14 +16,14 @@
 
 package org.gradlex.javamodule.testing;
 
-import org.gradle.api.NonNullApi;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JvmTestSuitePlugin;
 import org.gradle.util.GradleVersion;
+import org.jspecify.annotations.NullMarked;
 
 @SuppressWarnings("unused")
-@NonNullApi
+@NullMarked
 public abstract class JavaModuleTestingPlugin implements Plugin<Project> {
 
     @Override
