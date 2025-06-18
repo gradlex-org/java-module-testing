@@ -7,7 +7,6 @@ group = "org.gradlex"
 version = "1.7"
 
 tasks.withType<JavaCompile>().configureEach { options.release = 8 }
-tasks.withType<GroovyCompile>().configureEach { options.release = 8 }
 
 dependencies {
     testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
