@@ -10,7 +10,7 @@ tasks.withType<JavaCompile>().configureEach { options.release = 8 }
 tasks.withType<GroovyCompile>().configureEach { options.release = 8 }
 
 dependencies {
-    testImplementation("org.spockframework:spock-core:2.1-groovy-3.0")
+    testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
     testImplementation("org.gradle.exemplar:samples-check:1.0.3")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
 }
@@ -31,7 +31,7 @@ pluginPublishConventions {
 
 testing.suites.named<JvmTestSuite>("test") {
     useJUnitJupiter()
-    listOf("7.4", "7.6.5", "8.0.2").forEach { gradleVersionUnderTest ->
+    listOf("7.4", "7.6.5", "8.0.2", "8.14.2").forEach { gradleVersionUnderTest ->
         targets.register("test${gradleVersionUnderTest}") {
             testTask {
                 group = LifecycleBasePlugin.VERIFICATION_GROUP
