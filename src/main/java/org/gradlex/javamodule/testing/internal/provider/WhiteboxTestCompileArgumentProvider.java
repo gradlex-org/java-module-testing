@@ -1,35 +1,16 @@
-/*
- * Copyright the GradleX team.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+// SPDX-License-Identifier: Apache-2.0
 package org.gradlex.javamodule.testing.internal.provider;
-
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.provider.ListProperty;
-import org.gradle.api.provider.Provider;
-import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
-import org.gradle.api.tasks.compile.JavaCompile;
-import org.gradle.internal.jvm.JavaModuleDetector;
-import org.gradle.process.CommandLineArgumentProvider;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Provider;
+import org.gradle.process.CommandLineArgumentProvider;
+import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
 
 public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentProvider {
     private final Set<File> mainSourceFolders;
@@ -39,7 +20,10 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
     private final ListProperty<String> allTestRequires;
 
     public WhiteboxTestCompileArgumentProvider(
-            Set<File> mainSourceFolders, Set<File> testSourceFolders, ModuleInfoParser moduleInfoParser, ObjectFactory objects) {
+            Set<File> mainSourceFolders,
+            Set<File> testSourceFolders,
+            ModuleInfoParser moduleInfoParser,
+            ObjectFactory objects) {
         this.mainSourceFolders = mainSourceFolders;
         this.testSourceFolders = testSourceFolders;
         this.moduleInfoParser = moduleInfoParser;
@@ -57,8 +41,8 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
     @Override
     public Iterable<String> asArguments() {
         String moduleName = moduleInfoParser.moduleName(mainSourceFolders);
-        String testSources = testSourceFolders.stream().map(File::getPath)
-                .collect(Collectors.joining(File.pathSeparator));
+        String testSources =
+                testSourceFolders.stream().map(File::getPath).collect(Collectors.joining(File.pathSeparator));
 
         List<String> args = new ArrayList<>();
 
