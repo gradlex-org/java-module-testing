@@ -1,32 +1,16 @@
-/*
- * Copyright the GradleX team.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+// SPDX-License-Identifier: Apache-2.0
 package org.gradlex.javamodule.testing.internal.bridges;
-
-import org.gradle.api.Project;
-import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.SourceSet;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import org.gradle.api.Project;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.SourceSet;
 
 public class JavaModuleDependenciesBridge {
 
-    public static Provider<?> create(Project project, String moduleName, SourceSet sourceSetWithModuleInfo)   {
+    public static Provider<?> create(Project project, String moduleName, SourceSet sourceSetWithModuleInfo) {
         Object javaModuleDependencies = project.getExtensions().findByName("javaModuleDependencies");
         if (javaModuleDependencies == null) {
             return null;
@@ -39,13 +23,16 @@ public class JavaModuleDependenciesBridge {
         }
     }
 
-    public static void addRequiresRuntimeSupport(Project project, SourceSet sourceSetForModuleInfo, SourceSet sourceSetForClasspath) {
+    public static void addRequiresRuntimeSupport(
+            Project project, SourceSet sourceSetForModuleInfo, SourceSet sourceSetForClasspath) {
         Object javaModuleDependencies = project.getExtensions().findByName("javaModuleDependencies");
         if (javaModuleDependencies == null) {
             return;
         }
         try {
-            Method addRequiresRuntimeSupport = javaModuleDependencies.getClass().getMethod("addRequiresRuntimeSupport", SourceSet.class, SourceSet.class);
+            Method addRequiresRuntimeSupport = javaModuleDependencies
+                    .getClass()
+                    .getMethod("addRequiresRuntimeSupport", SourceSet.class, SourceSet.class);
             addRequiresRuntimeSupport.invoke(javaModuleDependencies, sourceSetForModuleInfo, sourceSetForClasspath);
         } catch (NoSuchMethodException e) {
             //noinspection UnnecessaryReturnStatement

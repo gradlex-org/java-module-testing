@@ -1,30 +1,14 @@
-/*
- * Copyright the GradleX team.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+// SPDX-License-Identifier: Apache-2.0
 package org.gradlex.javamodule.testing.internal;
-
-import org.gradle.api.file.ProjectLayout;
-import org.gradle.api.file.RegularFile;
-import org.gradle.api.provider.Provider;
-import org.gradle.api.provider.ProviderFactory;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import org.gradle.api.file.ProjectLayout;
+import org.gradle.api.file.RegularFile;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 
 public class ModuleInfoParser {
 
@@ -38,8 +22,10 @@ public class ModuleInfoParser {
 
     public String moduleName(Set<File> sourceFolders) {
         for (File folder : sourceFolders) {
-            Provider<RegularFile> moduleInfoFile = layout.file(providers.provider(() -> new File(folder, "module-info.java")));
-            Provider<String> moduleInfoContent = providers.fileContents(moduleInfoFile).getAsText();
+            Provider<RegularFile> moduleInfoFile =
+                    layout.file(providers.provider(() -> new File(folder, "module-info.java")));
+            Provider<String> moduleInfoContent =
+                    providers.fileContents(moduleInfoFile).getAsText();
             if (moduleInfoContent.isPresent()) {
                 return moduleName(moduleInfoContent.get());
             }
@@ -51,9 +37,8 @@ public class ModuleInfoParser {
         boolean inComment = false;
         boolean moduleKeywordFound = false;
 
-        for(String line: moduleInfoFileContent.split("\n")) {
-            String cleanedLine = line
-                    .replaceAll("/\\*.*\\*/", "") // open & close in this line
+        for (String line : moduleInfoFileContent.split("\n")) {
+            String cleanedLine = line.replaceAll("/\\*.*\\*/", "") // open & close in this line
                     .replaceAll("//.*", ""); // line comment
             inComment = inComment || cleanedLine.contains("/*");
             cleanedLine = cleanedLine.replaceAll("/\\*.*", ""); // open in this line
