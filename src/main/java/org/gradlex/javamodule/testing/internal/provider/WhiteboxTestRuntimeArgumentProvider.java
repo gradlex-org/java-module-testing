@@ -12,34 +12,43 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
 import org.gradle.process.CommandLineArgumentProvider;
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentProvider {
-    private final Set<File> mainSourceFolders;
     private final Provider<Directory> testClassesFolders;
-    private final File resourcesUnderTest;
     private final File testResources;
     private final ModuleInfoParser moduleInfoParser;
+
+    @SuppressWarnings("NotNullFieldNotInitialized")
+    private Set<File> mainSourceFolders;
+
+    @SuppressWarnings("NotNullFieldNotInitialized")
+    private File resourcesUnderTest;
 
     private final ListProperty<String> allTestRequires;
     private final ListProperty<String> allTestOpensTo;
     private final ListProperty<String> allTestExportsTo;
 
     public WhiteboxTestRuntimeArgumentProvider(
-            Set<File> mainSourceFolders,
             Provider<Directory> testClassesFolders,
-            File resourcesUnderTest,
             File testResources,
             ModuleInfoParser moduleInfoParser,
             ObjectFactory objects) {
-
-        this.mainSourceFolders = mainSourceFolders;
         this.testClassesFolders = testClassesFolders;
-        this.resourcesUnderTest = resourcesUnderTest;
         this.testResources = testResources;
         this.moduleInfoParser = moduleInfoParser;
         this.allTestRequires = objects.listProperty(String.class);
         this.allTestOpensTo = objects.listProperty(String.class);
         this.allTestExportsTo = objects.listProperty(String.class);
+    }
+
+    public void setMainSourceFolders(Set<File> mainSourceFolders) {
+        this.mainSourceFolders = mainSourceFolders;
+    }
+
+    public void setResourcesUnderTest(File resourcesUnderTest) {
+        this.resourcesUnderTest = resourcesUnderTest;
     }
 
     public void testRequires(Provider<List<String>> testRequires) {

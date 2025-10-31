@@ -4,7 +4,9 @@ package org.gradlex.javamodule.testing;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public interface WhiteboxJvmTestSuite {
 
     /**

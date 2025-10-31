@@ -4,7 +4,9 @@ package org.gradlex.javamodule.testing.internal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ModuleInfoRequiresParser {
     private static final String RUNTIME_KEYWORD = "/*runtime*/";
 
