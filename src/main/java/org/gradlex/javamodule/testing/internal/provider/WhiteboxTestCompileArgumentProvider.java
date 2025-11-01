@@ -11,23 +11,27 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
 import org.gradle.process.CommandLineArgumentProvider;
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentProvider {
-    private final Set<File> mainSourceFolders;
     private final Set<File> testSourceFolders;
     private final ModuleInfoParser moduleInfoParser;
+
+    @SuppressWarnings("NotNullFieldNotInitialized")
+    private Set<File> mainSourceFolders;
 
     private final ListProperty<String> allTestRequires;
 
     public WhiteboxTestCompileArgumentProvider(
-            Set<File> mainSourceFolders,
-            Set<File> testSourceFolders,
-            ModuleInfoParser moduleInfoParser,
-            ObjectFactory objects) {
-        this.mainSourceFolders = mainSourceFolders;
+            Set<File> testSourceFolders, ModuleInfoParser moduleInfoParser, ObjectFactory objects) {
         this.testSourceFolders = testSourceFolders;
         this.moduleInfoParser = moduleInfoParser;
         this.allTestRequires = objects.listProperty(String.class);
+    }
+
+    public void setMainSourceFolders(Set<File> mainSourceFolders) {
+        this.mainSourceFolders = mainSourceFolders;
     }
 
     public void testRequires(Provider<List<String>> testRequires) {

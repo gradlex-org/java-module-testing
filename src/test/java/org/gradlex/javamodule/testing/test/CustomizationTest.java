@@ -37,6 +37,36 @@ class CustomizationTest {
     }
 
     @Test
+    void can_change_sourcesUnderTest_of_whitebox_test_suite() {
+        build.useTestFixturesPlugin();
+        build.file("app/src/testFixtures/java/module-info.java")
+                .writeText("""
+            module org.example.fixtures {
+            }
+            """);
+        build.file("app/src/testFixtures/java/org/example/app/Main.java")
+                .writeText("""
+            package org.example.app;
+            public class Main {}
+            """);
+        build.appBuildFile.appendText(
+                """
+            javaModuleTesting.whitebox(testing.suites["test"]) {
+                sourcesUnderTest.set(sourceSets.testFixtures);
+                requires.add("org.junit.jupiter.api")
+            }
+            """);
+
+        var result = build.runTests();
+        var testResult = result.task(":app:test");
+
+        assertThat(result.getOutput()).contains("Main Module: org.example.fixtures");
+        assertThat(result.getOutput()).contains("Test Module: org.example.fixtures");
+        assertThat(testResult).isNotNull();
+        assertThat(testResult.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+    }
+
+    @Test
     void can_define_whitebox_test_suite_requires_in_moduleinfo_file() {
         build.appModuleInfoFile.writeText("""
             module org.example.app {

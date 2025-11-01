@@ -7,9 +7,13 @@ import java.util.List;
 import org.gradle.api.Project;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class JavaModuleDependenciesBridge {
 
+    @Nullable
     public static Provider<?> create(Project project, String moduleName, SourceSet sourceSetWithModuleInfo) {
         Object javaModuleDependencies = project.getExtensions().findByName("javaModuleDependencies");
         if (javaModuleDependencies == null) {

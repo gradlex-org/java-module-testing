@@ -9,7 +9,10 @@ import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class ModuleInfoParser {
 
     private final ProjectLayout layout;
@@ -20,6 +23,7 @@ public class ModuleInfoParser {
         this.providers = providers;
     }
 
+    @Nullable
     public String moduleName(Set<File> sourceFolders) {
         for (File folder : sourceFolders) {
             Provider<RegularFile> moduleInfoFile =
@@ -33,6 +37,7 @@ public class ModuleInfoParser {
         return null;
     }
 
+    @Nullable
     static String moduleName(String moduleInfoFileContent) {
         boolean inComment = false;
         boolean moduleKeywordFound = false;

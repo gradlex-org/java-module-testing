@@ -74,7 +74,7 @@ public class GradleBuild {
                 testLogging.showStandardStreams = true
             }
             tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
-        """
+            """
                         .formatted(launcherDependency));
         file("app/src/main/java/org/example/app/Main.java")
                 .writeText(
@@ -151,15 +151,11 @@ public class GradleBuild {
     }
 
     public GradleRunner runner(String... args) {
-        return runner(true, args);
-    }
-
-    public GradleRunner runner(boolean projectIsolation, String... args) {
         boolean debugMode = ManagementFactory.getRuntimeMXBean()
                 .getInputArguments()
                 .toString()
                 .contains("-agentlib:jdwp");
-        List<String> latestFeaturesArgs = GRADLE_VERSION_UNDER_TEST != null || !projectIsolation
+        List<String> latestFeaturesArgs = GRADLE_VERSION_UNDER_TEST != null || debugMode
                 ? List.of()
                 : List.of(
                         "--configuration-cache",
