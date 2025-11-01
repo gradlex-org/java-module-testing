@@ -143,12 +143,12 @@
    <components>
       <component group="org.asciidoctor" name="asciidoctor-gradle-base" version="4.0.5">
          <artifact name="asciidoctor-gradle-base-4.0.5.jar">
-            <sha256 value="3b0a5c953c98977da3cec1bfd66c0f7438e3e07c06bda00abae8c53e4dd2185a" origin="Downloaded the file from https://plugins.gradle.org/m2/org/asciidoctor/asciidoctor-gradle-base/4.0.5 and generated the checksum locally" reason="Artifact is not signed"/>
+            <md5 value="64435768c6cb3a803af61ea632f0bd93" origin="Downloaded the file from https://plugins.gradle.org/m2/org/asciidoctor/asciidoctor-gradle-base/4.0.5 and generated the checksum locally" reason="Artifact is not signed"/>
          </artifact>
       </component>
       <component group="org.asciidoctor" name="asciidoctor-gradle-jvm" version="4.0.5">
          <artifact name="asciidoctor-gradle-jvm-4.0.5.jar">
-            <sha256 value="3e020e7f350cb6ff2658ff124ea63d42da3dacf6da3b71efe4c7670413369ce9" origin="Downloaded the file from https://plugins.gradle.org/m2/org/asciidoctor/asciidoctor-gradle-jvm/4.0.5 and generated the checksum locally" reason="Artifact is not signed"/>
+            <md5 value="46c3fea67502a15834e020f185775c60" origin="Downloaded the file from https://plugins.gradle.org/m2/org/asciidoctor/asciidoctor-gradle-jvm/4.0.5 and generated the checksum locally" reason="Artifact is not signed"/>
          </artifact>
       </component>
    </components>
