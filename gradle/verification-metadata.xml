@@ -129,15 +129,6 @@
          <trusted-key id="EE0CA873074092F806F59B65D364ABAA39A47320" group="com.google.googlejavaformat" name="google-java-format"/>
          <!-- ✅ Signed by Timothy Wall - Java Native Access (JNA) -->
          <trusted-key id="78DA3333F653B1C54A938BE24DB7BC57DFDBCEA4" group="net.java.dev.jna" name="jna"/>
-
-
-         <!-- TESTING GROOVY - remove once tests are migrated to Java -->
-         <!-- ✅ Signed by Joe Schmetzer - Java Hamcrest -->
-         <trusted-key id="E3A9F95079E84CE201F7CF60BEDE11EAF1164480" group="org.hamcrest" name="hamcrest"/>
-         <!-- ✅ Signed by Paul King - Groovy -->
-         <trusted-key id="34441E504A937F43EB0DAEF96A65176A0FB1CD0B" group="org.apache.groovy" name="groovy"/>
-         <!-- ✅ Signed Spockframework -->
-         <trusted-key id="76E94E8FF0AB5AF3B6F8366972FEFD1572EB75E1" group="org.spockframework" name="spock-core"/>
       </trusted-keys>
    </configuration>
    <components>

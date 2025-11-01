@@ -16,11 +16,3 @@ publishingConventions {
 }
 
 testingConventions { testGradleVersions("7.4", "7.6.5", "8.0.2", "8.14.2") }
-
-// === the following custom configuration should be removed once tests are migrated to Java
-apply(plugin = "groovy")
-
-tasks.named<GroovyCompile>("compileTestGroovy") { targetCompatibility = "11" } // allow tests to run against 6.x
-
-dependencies { testImplementation("org.spockframework:spock-core:2.3-groovy-4.0") } //
-// ====================================================================================
