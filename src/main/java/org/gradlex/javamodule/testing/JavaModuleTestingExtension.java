@@ -3,13 +3,14 @@ package org.gradlex.javamodule.testing;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.Describable;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.file.RegularFile;
@@ -38,6 +39,9 @@ public abstract class JavaModuleTestingExtension {
     private static final Action<WhiteboxJvmTestSuite> NO_OP_ACTION = c -> {};
 
     private final Project project;
+
+    // for late 'extendsFrom' configuration
+    private final Map<SourceSet, SourceSet> whiteboxOrClasspathTestSuites = new HashMap<>();
 
     @Inject
     public JavaModuleTestingExtension(Project project) {
@@ -148,6 +152,8 @@ public abstract class JavaModuleTestingExtension {
                     .convention(project.getExtensions()
                             .getByType(SourceSetContainer.class)
                             .getByName(SourceSet.MAIN_SOURCE_SET_NAME));
+
+            // Improve: requiresFromModuleInfo is done multiple times when 'whitebox' is called multiple times
             whiteboxJvmTestSuite
                     .getRequires()
                     .addAll(requiresFromModuleInfo(
@@ -156,6 +162,7 @@ public abstract class JavaModuleTestingExtension {
                     .getRequiresRuntime()
                     .addAll(requiresFromModuleInfo(
                             (JvmTestSuite) jvmTestSuite, whiteboxJvmTestSuite.getSourcesUnderTest(), true));
+
             conf.execute(whiteboxJvmTestSuite);
             configureJvmTestSuiteForWhitebox((JvmTestSuite) jvmTestSuite, whiteboxJvmTestSuite);
         }
@@ -224,24 +231,17 @@ public abstract class JavaModuleTestingExtension {
     private void configureJvmTestSuiteForWhitebox(
             JvmTestSuite jvmTestSuite, WhiteboxJvmTestSuite whiteboxJvmTestSuite) {
         ConfigurationContainer configurations = project.getConfigurations();
-        DependencyHandler dependencies = project.getDependencies();
         TaskContainer tasks = project.getTasks();
         ModuleInfoParser moduleInfoParser = new ModuleInfoParser(project.getLayout(), project.getProviders());
 
         SourceSet testSources = jvmTestSuite.getSources();
+        SourceSet sourcesUnderTest = whiteboxJvmTestSuite.getSourcesUnderTest().get();
+        whiteboxOrClasspathTestSuites.put(testSources, sourcesUnderTest);
+
         JavaModuleDependenciesBridge.addRequiresRuntimeSupport(
                 project, whiteboxJvmTestSuite.getSourcesUnderTest().get(), jvmTestSuite.getSources());
 
         tasks.named(testSources.getCompileJavaTaskName(), JavaCompile.class, compileJava -> {
-            SourceSet sourcesUnderTest =
-                    whiteboxJvmTestSuite.getSourcesUnderTest().get();
-
-            Configuration compileOnly = configurations.getByName(sourcesUnderTest.getCompileOnlyConfigurationName());
-            Configuration testCompileOnly = configurations.getByName(testSources.getCompileOnlyConfigurationName());
-            if (!testCompileOnly.getExtendsFrom().contains(compileOnly)) {
-                testCompileOnly.extendsFrom(compileOnly);
-            }
-
             compileJava.setClasspath(sourcesUnderTest
                     .getOutput()
                     .plus(configurations.getByName(testSources.getCompileClasspathConfigurationName())));
@@ -250,29 +250,12 @@ public abstract class JavaModuleTestingExtension {
                     compileJava.getOptions().getCompilerArgumentProviders().stream()
                             .filter(p -> p instanceof WhiteboxTestCompileArgumentProvider)
                             .findFirst()
-                            .orElseGet(() -> {
-                                WhiteboxTestCompileArgumentProvider newProvider =
-                                        new WhiteboxTestCompileArgumentProvider(
-                                                testSources.getJava().getSrcDirs(),
-                                                moduleInfoParser,
-                                                project.getObjects());
-                                compileJava
-                                        .getOptions()
-                                        .getCompilerArgumentProviders()
-                                        .add(newProvider);
-                                compileJava.doFirst(
-                                        project.getObjects().newInstance(JavaCompileSetModulePathAction.class));
-                                return newProvider;
-                            });
+                            .orElseGet(() -> initCompileArgProvider(compileJava, testSources, moduleInfoParser));
             argumentProvider.setMainSourceFolders(sourcesUnderTest.getJava().getSrcDirs());
-            argumentProvider.testRequires(
-                    JavaModuleDependenciesBridge.getCompileClasspathModules(project, testSources));
             argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires());
         });
 
         tasks.named(testSources.getName(), Test.class, test -> {
-            SourceSet sourcesUnderTest =
-                    whiteboxJvmTestSuite.getSourcesUnderTest().get();
             test.setClasspath(configurations
                     .getByName(testSources.getRuntimeClasspathConfigurationName())
                     .plus(sourcesUnderTest.getOutput())
@@ -288,49 +271,63 @@ public abstract class JavaModuleTestingExtension {
                     (WhiteboxTestRuntimeArgumentProvider) test.getJvmArgumentProviders().stream()
                             .filter(p -> p instanceof WhiteboxTestRuntimeArgumentProvider)
                             .findFirst()
-                            .orElseGet(() -> {
-                                WhiteboxTestRuntimeArgumentProvider newProvider =
-                                        new WhiteboxTestRuntimeArgumentProvider(
-                                                testSources.getJava().getClassesDirectory(),
-                                                testSources.getOutput().getResourcesDir(),
-                                                moduleInfoParser,
-                                                project.getObjects());
-                                test.getJvmArgumentProviders().add(newProvider);
-                                return newProvider;
-                            });
+                            .orElseGet(() -> initRuntimeArgProvider(test, testSources, moduleInfoParser));
             argumentProvider.setMainSourceFolders(sourcesUnderTest.getJava().getSrcDirs());
             argumentProvider.setResourcesUnderTest(sourcesUnderTest.getOutput().getResourcesDir());
-            argumentProvider.testRequires(
-                    JavaModuleDependenciesBridge.getRuntimeClasspathModules(project, testSources));
             argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires());
-            argumentProvider.testOpensTo(JavaModuleDependenciesBridge.getOpensToModules(project, testSources));
             argumentProvider.testOpensTo(whiteboxJvmTestSuite.getOpensTo());
-            argumentProvider.testExportsTo(JavaModuleDependenciesBridge.getExportsToModules(project, testSources));
             argumentProvider.testExportsTo(whiteboxJvmTestSuite.getExportsTo());
         });
 
-        Configuration implementation = configurations.getByName(testSources.getImplementationConfigurationName());
-        implementation.withDependencies(d -> {
-            for (String requiresModuleName : whiteboxJvmTestSuite.getRequires().get()) {
+        addDependencyForRequires(
+                whiteboxJvmTestSuite,
+                project,
+                testSources.getImplementationConfigurationName(),
+                whiteboxJvmTestSuite.getRequires());
+        addDependencyForRequires(
+                whiteboxJvmTestSuite,
+                project,
+                testSources.getRuntimeOnlyConfigurationName(),
+                whiteboxJvmTestSuite.getRequiresRuntime());
+    }
+
+    private WhiteboxTestCompileArgumentProvider initCompileArgProvider(
+            JavaCompile compileJava, SourceSet testSources, ModuleInfoParser moduleInfoParser) {
+        WhiteboxTestCompileArgumentProvider newProvider = new WhiteboxTestCompileArgumentProvider(
+                testSources.getJava().getSrcDirs(), moduleInfoParser, project.getObjects());
+        newProvider.testRequires(JavaModuleDependenciesBridge.getCompileClasspathModules(project, testSources));
+        compileJava.getOptions().getCompilerArgumentProviders().add(newProvider);
+        compileJava.doFirst(project.getObjects().newInstance(JavaCompileSetModulePathAction.class));
+        return newProvider;
+    }
+
+    private WhiteboxTestRuntimeArgumentProvider initRuntimeArgProvider(
+            Test test, SourceSet testSources, ModuleInfoParser moduleInfoParser) {
+        WhiteboxTestRuntimeArgumentProvider newProvider = new WhiteboxTestRuntimeArgumentProvider(
+                testSources.getJava().getClassesDirectory(),
+                testSources.getOutput().getResourcesDir(),
+                moduleInfoParser,
+                project.getObjects());
+        newProvider.testRequires(JavaModuleDependenciesBridge.getRuntimeClasspathModules(project, testSources));
+        newProvider.testOpensTo(JavaModuleDependenciesBridge.getOpensToModules(project, testSources));
+        newProvider.testExportsTo(JavaModuleDependenciesBridge.getExportsToModules(project, testSources));
+        test.getJvmArgumentProviders().add(newProvider);
+        return newProvider;
+    }
+
+    private void addDependencyForRequires(
+            WhiteboxJvmTestSuite whiteboxJvmTestSuite, String scope, Provider<List<String>> requires) {
+        ConfigurationContainer configurations = project.getConfigurations();
+        DependencyHandler dependencies = project.getDependencies();
+
+        configurations.getByName(scope).withDependencies(d -> {
+            for (String requiresModuleName : requires.get()) {
                 Provider<?> dependency = JavaModuleDependenciesBridge.create(
                         project,
                         requiresModuleName,
                         whiteboxJvmTestSuite.getSourcesUnderTest().get());
                 if (dependency != null) {
-                    dependencies.addProvider(implementation.getName(), dependency);
-                }
-            }
-        });
-        Configuration runtimeOnly = configurations.getByName(testSources.getRuntimeOnlyConfigurationName());
-        runtimeOnly.withDependencies(d -> {
-            for (String requiresModuleName :
-                    whiteboxJvmTestSuite.getRequiresRuntime().get()) {
-                Provider<?> dependency = JavaModuleDependenciesBridge.create(
-                        project,
-                        requiresModuleName,
-                        whiteboxJvmTestSuite.getSourcesUnderTest().get());
-                if (dependency != null) {
-                    dependencies.addProvider(runtimeOnly.getName(), dependency);
+                    dependencies.addProvider(scope, dependency);
                 }
             }
         });

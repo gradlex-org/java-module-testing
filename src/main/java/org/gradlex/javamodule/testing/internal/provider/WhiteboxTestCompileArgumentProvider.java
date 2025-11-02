@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.process.CommandLineArgumentProvider;
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
 import org.jspecify.annotations.NullMarked;
@@ -21,13 +21,13 @@ public class WhiteboxTestCompileArgumentProvider implements CommandLineArgumentP
     @SuppressWarnings("NotNullFieldNotInitialized")
     private Set<File> mainSourceFolders;
 
-    private final ListProperty<String> allTestRequires;
+    private final SetProperty<String> allTestRequires;
 
     public WhiteboxTestCompileArgumentProvider(
             Set<File> testSourceFolders, ModuleInfoParser moduleInfoParser, ObjectFactory objects) {
         this.testSourceFolders = testSourceFolders;
         this.moduleInfoParser = moduleInfoParser;
-        this.allTestRequires = objects.listProperty(String.class);
+        this.allTestRequires = objects.setProperty(String.class);
     }
 
     public void setMainSourceFolders(Set<File> mainSourceFolders) {

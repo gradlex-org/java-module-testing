@@ -8,8 +8,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import org.gradle.api.file.Directory;
 import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.process.CommandLineArgumentProvider;
 import org.gradlex.javamodule.testing.internal.ModuleInfoParser;
 import org.jspecify.annotations.NullMarked;
@@ -26,9 +26,9 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
     @SuppressWarnings("NotNullFieldNotInitialized")
     private File resourcesUnderTest;
 
-    private final ListProperty<String> allTestRequires;
-    private final ListProperty<String> allTestOpensTo;
-    private final ListProperty<String> allTestExportsTo;
+    private final SetProperty<String> allTestRequires;
+    private final SetProperty<String> allTestOpensTo;
+    private final SetProperty<String> allTestExportsTo;
 
     public WhiteboxTestRuntimeArgumentProvider(
             Provider<Directory> testClassesFolders,
@@ -38,9 +38,9 @@ public class WhiteboxTestRuntimeArgumentProvider implements CommandLineArgumentP
         this.testClassesFolders = testClassesFolders;
         this.testResources = testResources;
         this.moduleInfoParser = moduleInfoParser;
-        this.allTestRequires = objects.listProperty(String.class);
-        this.allTestOpensTo = objects.listProperty(String.class);
-        this.allTestExportsTo = objects.listProperty(String.class);
+        this.allTestRequires = objects.setProperty(String.class);
+        this.allTestOpensTo = objects.setProperty(String.class);
+        this.allTestExportsTo = objects.setProperty(String.class);
     }
 
     public void setMainSourceFolders(Set<File> mainSourceFolders) {
