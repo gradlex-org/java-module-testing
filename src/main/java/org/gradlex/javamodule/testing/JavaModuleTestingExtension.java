@@ -30,8 +30,10 @@ import org.gradlex.javamodule.testing.internal.actions.JavaCompileSetModulePathA
 import org.gradlex.javamodule.testing.internal.bridges.JavaModuleDependenciesBridge;
 import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestCompileArgumentProvider;
 import org.gradlex.javamodule.testing.internal.provider.WhiteboxTestRuntimeArgumentProvider;
+import org.jspecify.annotations.NullMarked;
 
 @SuppressWarnings("UnstableApiUsage")
+@NullMarked
 public abstract class JavaModuleTestingExtension {
     private static final Action<WhiteboxJvmTestSuite> NO_OP_ACTION = c -> {};
 
@@ -251,7 +253,6 @@ public abstract class JavaModuleTestingExtension {
                             .orElseGet(() -> {
                                 WhiteboxTestCompileArgumentProvider newProvider =
                                         new WhiteboxTestCompileArgumentProvider(
-                                                sourcesUnderTest.getJava().getSrcDirs(),
                                                 testSources.getJava().getSrcDirs(),
                                                 moduleInfoParser,
                                                 project.getObjects());
@@ -263,6 +264,7 @@ public abstract class JavaModuleTestingExtension {
                                         project.getObjects().newInstance(JavaCompileSetModulePathAction.class));
                                 return newProvider;
                             });
+            argumentProvider.setMainSourceFolders(sourcesUnderTest.getJava().getSrcDirs());
             argumentProvider.testRequires(
                     JavaModuleDependenciesBridge.getCompileClasspathModules(project, testSources));
             argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires());
@@ -289,15 +291,15 @@ public abstract class JavaModuleTestingExtension {
                             .orElseGet(() -> {
                                 WhiteboxTestRuntimeArgumentProvider newProvider =
                                         new WhiteboxTestRuntimeArgumentProvider(
-                                                sourcesUnderTest.getJava().getSrcDirs(),
                                                 testSources.getJava().getClassesDirectory(),
-                                                sourcesUnderTest.getOutput().getResourcesDir(),
                                                 testSources.getOutput().getResourcesDir(),
                                                 moduleInfoParser,
                                                 project.getObjects());
                                 test.getJvmArgumentProviders().add(newProvider);
                                 return newProvider;
                             });
+            argumentProvider.setMainSourceFolders(sourcesUnderTest.getJava().getSrcDirs());
+            argumentProvider.setResourcesUnderTest(sourcesUnderTest.getOutput().getResourcesDir());
             argumentProvider.testRequires(
                     JavaModuleDependenciesBridge.getRuntimeClasspathModules(project, testSources));
             argumentProvider.testRequires(whiteboxJvmTestSuite.getRequires());
