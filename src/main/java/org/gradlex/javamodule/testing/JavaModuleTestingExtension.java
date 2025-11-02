@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.Describable;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.file.RegularFile;
@@ -61,6 +62,7 @@ public abstract class JavaModuleTestingExtension {
                 whitebox(jvmTestSuite, conf -> conf.getOpensTo().add("org.junit.platform.commons"));
             }
         });
+        project.afterEvaluate(this::lateConfigureExtendsFrom);
     }
 
     /**
@@ -281,12 +283,10 @@ public abstract class JavaModuleTestingExtension {
 
         addDependencyForRequires(
                 whiteboxJvmTestSuite,
-                project,
                 testSources.getImplementationConfigurationName(),
                 whiteboxJvmTestSuite.getRequires());
         addDependencyForRequires(
                 whiteboxJvmTestSuite,
-                project,
                 testSources.getRuntimeOnlyConfigurationName(),
                 whiteboxJvmTestSuite.getRequiresRuntime());
     }
@@ -359,5 +359,31 @@ public abstract class JavaModuleTestingExtension {
             test.setTestClassesDirs(testSources.getOutput().getClassesDirs());
             test.getJvmArgumentProviders().removeIf(p -> p instanceof WhiteboxTestRuntimeArgumentProvider);
         });
+    }
+
+    private void lateConfigureExtendsFrom(Project project) {
+        ConfigurationContainer configurations = project.getConfigurations();
+        whiteboxOrClasspathTestSuites.forEach((testSources, sourcesUnderTest) -> {
+            extendsFrom(
+                    configurations,
+                    testSources.getImplementationConfigurationName(),
+                    sourcesUnderTest.getImplementationConfigurationName());
+            extendsFrom(
+                    configurations,
+                    testSources.getRuntimeOnlyConfigurationName(),
+                    sourcesUnderTest.getRuntimeOnlyConfigurationName());
+            extendsFrom(
+                    configurations,
+                    testSources.getCompileOnlyConfigurationName(),
+                    sourcesUnderTest.getCompileOnlyConfigurationName());
+        });
+    }
+
+    private void extendsFrom(ConfigurationContainer configurations, String testScope, String underTestScope) {
+        Configuration testScopeConf = configurations.getByName(testScope);
+        Configuration underTestScopeConf = configurations.getByName(underTestScope);
+        if (!testScopeConf.getExtendsFrom().contains(underTestScopeConf)) {
+            testScopeConf.extendsFrom(underTestScopeConf);
+        }
     }
 }
