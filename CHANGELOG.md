@@ -1,5 +1,9 @@
 # Java Module Testing Gradle Plugin - Changelog
 
+## Version 1.8
+* [#143](https://github.com/gradlex-org/java-module-testing/issues/143) Fully support other source sets than 'main' in whitebox tests
+* [#114](https://github.com/gradlex-org/java-module-testing/issues/114) Fix: issue where the plugin causes a 'mutating a configuration after it has been resolved' error
+
 ## Version 1.7
 * [#100](https://github.com/gradlex-org/java-module-testing/issues/100) Use `exportsTo` and `opensTo` statements from Module Info DSL
 

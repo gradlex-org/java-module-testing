@@ -361,6 +361,7 @@ public abstract class JavaModuleTestingExtension {
         });
     }
 
+    // https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_configurations_graph
     private void lateConfigureExtendsFrom(Project project) {
         ConfigurationContainer configurations = project.getConfigurations();
         whiteboxOrClasspathTestSuites.forEach((testSources, sourcesUnderTest) -> {

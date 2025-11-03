@@ -1,4 +1,4 @@
-version = "1.7"
+version = "1.8"
 
 publishingConventions {
     pluginPortal("${project.group}.${project.name}") {

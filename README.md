@@ -51,7 +51,7 @@ Add this to the build file of your convention plugin's build
 
 ```
 dependencies {
-    implementation("org.gradlex:java-module-testing:1.7")
+    implementation("org.gradlex:java-module-testing:1.8")
 }
 ```
 

@@ -5,5 +5,5 @@ plugins {
 dependencies {
     implementation("org.gradlex:extra-java-module-info:1.13.1")
     implementation("org.gradlex:java-module-dependencies:1.11")
-    implementation("org.gradlex:java-module-testing:1.7")
+    implementation("org.gradlex:java-module-testing:1.8")
 }
