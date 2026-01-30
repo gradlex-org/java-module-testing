@@ -13,8 +13,7 @@ class JavaModuleDependenciesBridgeTest {
 
     @Test
     void respects_moduleNameToGA_mappings() {
-        build.appBuildFile.appendText(
-                """
+        build.appBuildFile.appendText("""
             javaModuleDependencies {
                 moduleNameToGA.put("org.example.lib", "org.example:lib")
             }
@@ -42,8 +41,7 @@ class JavaModuleDependenciesBridgeTest {
 
     @Test
     void respects_moduleNamePrefixToGroup_mappings() {
-        build.appBuildFile.appendText(
-                """
+        build.appBuildFile.appendText("""
             javaModuleDependencies {
                 moduleNamePrefixToGroup.put("org.example.", "org.example")
             }
@@ -71,8 +69,7 @@ class JavaModuleDependenciesBridgeTest {
 
     @Test
     void compiles_with_provides_runtime_directives() {
-        build.appBuildFile.appendText(
-                """
+        build.appBuildFile.appendText("""
             dependencies.constraints {
                 javaModuleDependencies {
                     implementation(gav("org.slf4j", "2.0.3"))
@@ -88,8 +85,7 @@ class JavaModuleDependenciesBridgeTest {
                 opensTo.add("org.junit.platform.commons")
             }
             """);
-        build.appModuleInfoFile.writeText(
-                """
+        build.appModuleInfoFile.writeText("""
             module org.example.app {
                 requires org.slf4j;
                 requires /*runtime*/ org.slf4j.simple;
@@ -114,15 +110,12 @@ class JavaModuleDependenciesBridgeTest {
             module org.example.app {
             }
             """);
-        build.file("app/src/testFixtures/java/module-info.java")
-                .writeText(
-                        """
+        build.file("app/src/testFixtures/java/module-info.java").writeText("""
             open module org.example.app.test.fixtures {
                 requires org.example.app;
             }
             """);
-        build.appBuildFile.appendText(
-                """
+        build.appBuildFile.appendText("""
             javaModuleTesting.whitebox(testing.suites["test"]) {
                 requires.add("org.junit.jupiter.api")
                 requires.add("org.example.app.test.fixtures")

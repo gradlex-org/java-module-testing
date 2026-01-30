@@ -45,8 +45,7 @@ public class GradleBuild {
                 ? "testRuntimeOnly(\"org.junit.platform:junit-platform-launcher\")"
                 : "";
 
-        settingsFile.writeText(
-                """
+        settingsFile.writeText("""
             pluginManagement {
                 plugins { id("org.gradlex.java-module-dependencies") version "1.10" }
             }
@@ -55,8 +54,7 @@ public class GradleBuild {
             rootProject.name = "test-project"
             include("app", "lib")
             """);
-        appBuildFile.writeText(
-                """
+        appBuildFile.writeText("""
             plugins {
                 id("org.gradlex.java-module-testing")
                 id("application")
@@ -74,11 +72,8 @@ public class GradleBuild {
                 testLogging.showStandardStreams = true
             }
             tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
-            """
-                        .formatted(launcherDependency));
-        file("app/src/main/java/org/example/app/Main.java")
-                .writeText(
-                        """
+            """.formatted(launcherDependency));
+        file("app/src/main/java/org/example/app/Main.java").writeText("""
             package org.example.app;
 
             public class Main {
@@ -86,9 +81,7 @@ public class GradleBuild {
                 }
             }
             """);
-        file("app/src/test/java/org/example/app/test/MainTest.java")
-                .writeText(
-                        """
+        file("app/src/test/java/org/example/app/test/MainTest.java").writeText("""
             package org.example.app.test;
 
             import org.junit.jupiter.api.Test;
@@ -105,8 +98,7 @@ public class GradleBuild {
             }
             """);
 
-        libBuildFile.writeText(
-                """
+        libBuildFile.writeText("""
             plugins {
                 id("org.gradlex.java-module-testing")
                 id("java-library")

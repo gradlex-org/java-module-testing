@@ -13,8 +13,7 @@ class ClasspathSuiteTest {
 
     @Test
     void can_configure_classpath_test_suite() {
-        build.appBuildFile.appendText(
-                """
+        build.appBuildFile.appendText("""
             javaModuleTesting.classpath(testing.suites["test"])
             """);
         build.appModuleInfoFile.appendText("""
