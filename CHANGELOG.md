@@ -1,5 +1,8 @@
 # Java Module Testing Gradle Plugin - Changelog
 
+## Version 1.8.1
+* [#172](https://github.com/gradlex-org/java-module-testing/issues/172) Fix incompatibility with Gradle 9.5.0+
+
 ## Version 1.8
 * [#143](https://github.com/gradlex-org/java-module-testing/issues/143) Fully support other source sets than 'main' in whitebox tests
 * [#114](https://github.com/gradlex-org/java-module-testing/issues/114) Fix: issue where the plugin causes a 'mutating a configuration after it has been resolved' error

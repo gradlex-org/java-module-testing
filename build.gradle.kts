@@ -15,4 +15,5 @@ publishingConventions {
     }
 }
 
-testingConventions { testGradleVersions("7.4", "7.6.5", "8.0.2", "8.14.2") }
+// 9.4.1 is the last version where 'JavaModuleDetector' is a class and not an interface
+testingConventions { testGradleVersions("7.4", "7.6.5", "8.0.2", "8.14.2", "9.4.1") }
