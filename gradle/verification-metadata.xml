@@ -2,7 +2,7 @@
 <verification-metadata xmlns="https://schema.gradle.org/dependency-verification" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://schema.gradle.org/dependency-verification https://schema.gradle.org/dependency-verification/dependency-verification-1.3.xsd">
    <configuration>
       <verify-metadata>false</verify-metadata>
-      <!-- use 'TRUE' instead of 'true' so that Renovate ignores it: https://github.com/renovatebot/renovate/discussions/39029 -->
+      <!-- use 'TRUE' instead of 'true' so that Renovate ignores it: https://github.com/renovatebot/renovate/issues/41495 -->
       <verify-signatures>TRUE</verify-signatures>
       <keyring-format>armored</keyring-format>
       <key-servers enabled="false"/>
