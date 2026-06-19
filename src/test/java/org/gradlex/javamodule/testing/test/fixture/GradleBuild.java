@@ -47,7 +47,7 @@ public class GradleBuild {
 
         settingsFile.writeText("""
             pluginManagement {
-                plugins { id("org.gradlex.java-module-dependencies") version "1.10" }
+                plugins { id("org.gradlex.java-module-dependencies") version "1.12.2" }
             }
             dependencyResolutionManagement { repositories.mavenCentral() }
             includeBuild(".")
