@@ -46,9 +46,7 @@ public class GradleBuild {
                 : "";
 
         settingsFile.writeText("""
-            pluginManagement {
-                plugins { id("org.gradlex.java-module-dependencies") version "1.12.2" }
-            }
+            pluginManagement { plugins { id("org.gradlex.java-module-dependencies") version "1.13.1" } }
             dependencyResolutionManagement { repositories.mavenCentral() }
             includeBuild(".")
             rootProject.name = "test-project"
@@ -109,10 +107,19 @@ public class GradleBuild {
     }
 
     public GradleBuild useJavaModuleDependenciesPlugin() {
-        appBuildFile.writeText(
-                appBuildFile.text().replace("plugins {", "plugins { id(\"org.gradlex.java-module-dependencies\")"));
-        libBuildFile.writeText(
-                libBuildFile.text().replace("plugins {", "plugins { id(\"org.gradlex.java-module-dependencies\")"));
+        if (GRADLE_VERSION_UNDER_TEST == null) {
+            // settings plugin approach that is fully compatible with isolated projects
+            settingsFile.writeText(settingsFile
+                    .text()
+                    .replace("pluginManagement { plugins {", "plugins {")
+                    .replace("} }", "}")
+                    .replace("include(\"app\", \"lib\")", "javaModules { directory(\".\") }"));
+        } else {
+            appBuildFile.writeText(
+                    appBuildFile.text().replace("plugins {", "plugins { id(\"org.gradlex.java-module-dependencies\")"));
+            libBuildFile.writeText(
+                    libBuildFile.text().replace("plugins {", "plugins { id(\"org.gradlex.java-module-dependencies\")"));
+        }
         return this;
     }
 
@@ -147,14 +154,8 @@ public class GradleBuild {
                 .getInputArguments()
                 .toString()
                 .contains("-agentlib:jdwp");
-        List<String> latestFeaturesArgs = GRADLE_VERSION_UNDER_TEST != null || debugMode
-                ? List.of()
-                : List.of(
-                        "--configuration-cache",
-                        "-Dorg.gradle.unsafe.isolated-projects=true",
-                        // "getGroup" in "JavaModuleDependenciesExtension.create"
-                        "--configuration-cache-problems=warn",
-                        "-Dorg.gradle.configuration-cache.max-problems=4");
+        List<String> latestFeaturesArgs =
+                GRADLE_VERSION_UNDER_TEST != null || debugMode ? List.of() : List.of("--isolated-projects");
         Stream<String> standardArgs = Stream.of("-s", "--warning-mode=fail");
         GradleRunner runner = GradleRunner.create()
                 .forwardOutput()
