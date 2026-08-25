@@ -9,7 +9,7 @@ dependencies {
 }
 
 dependencies.constraints {
-    api("org.apache.xmlbeans:xmlbeans:5.3.0")
+    api("org.apache.xmlbeans:xmlbeans:5.4.0")
     api("org.slf4j:slf4j-api:2.0.18")
     api("org.slf4j:slf4j-simple:2.0.18")
 }
